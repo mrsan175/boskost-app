@@ -28,7 +28,7 @@ export default async function TenantsPage() {
     .from(tenants)
     .leftJoin(
       roomTenants,
-      and(eq(roomTenants.tenantId, tenants.id), eq(roomTenants.isActive, true))
+      and(eq(roomTenants.tenantId, tenants.id), eq(roomTenants.isActive, true)),
     )
     .leftJoin(rooms, eq(roomTenants.roomId, rooms.id))
     .leftJoin(properties, eq(rooms.propertyId, properties.id))
@@ -50,9 +50,9 @@ export default async function TenantsPage() {
     .orderBy(properties.name, rooms.roomNumber);
 
   return (
-    <TenantsView 
-      initialTenants={initialTenants} 
-      availableRooms={availableRoomRows} 
+    <TenantsView
+      initialTenants={initialTenants}
+      availableRooms={availableRoomRows}
     />
   );
 }

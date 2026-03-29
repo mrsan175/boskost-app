@@ -21,8 +21,8 @@ export const subscriptionTierEnum = pgEnum("SubscriptionTier", [
 ]);
 
 export const roomStatusEnum = pgEnum("RoomStatus", [
-  "available",   // kosong / tersedia
-  "occupied",    // terisi / ditempati penyewa
+  "available", // kosong / tersedia
+  "occupied", // terisi / ditempati penyewa
   "maintenance", // dalam perbaikan
 ]);
 
@@ -50,7 +50,9 @@ export const users = pgTable("users", {
   email: varchar("email", { length: 255 }).notNull().unique(),
   name: text("name"),
   imageUrl: text("image_url"),
-  subscriptionTier: subscriptionTierEnum("subscription_tier").default("FREE").notNull(),
+  subscriptionTier: subscriptionTierEnum("subscription_tier")
+    .default("FREE")
+    .notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -143,8 +145,10 @@ export const activityLogs = pgTable("activity_logs", {
   ownerId: varchar("owner_id", { length: 255 })
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
-  propertyId: varchar("property_id", { length: 255 })
-    .references(() => properties.id, { onDelete: "set null" }),
+  propertyId: varchar("property_id", { length: 255 }).references(
+    () => properties.id,
+    { onDelete: "set null" },
+  ),
   type: activityTypeEnum("type").notNull(),
   title: varchar("title", { length: 255 }).notNull(),
   description: text("description"),

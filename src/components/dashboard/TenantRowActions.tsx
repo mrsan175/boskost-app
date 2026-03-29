@@ -1,10 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { EditTenantDialog, type AvailableRoom } from "@/components/dashboard/EditTenantDialog";
+import {
+  EditTenantDialog,
+  type AvailableRoom,
+} from "@/components/dashboard/EditTenantDialog";
 import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Edit02Icon, WhatsappIcon, Mail01Icon, ContactIcon } from "@hugeicons/core-free-icons";
+import {
+  Edit02Icon,
+  WhatsappIcon,
+  Mail01Icon,
+  ContactIcon,
+} from "@hugeicons/core-free-icons";
 
 interface TenantRowActionsProps {
   tenant: {
@@ -20,7 +28,10 @@ interface TenantRowActionsProps {
   availableRooms: AvailableRoom[];
 }
 
-export function TenantRowActions({ tenant, availableRooms }: TenantRowActionsProps) {
+export function TenantRowActions({
+  tenant,
+  availableRooms,
+}: TenantRowActionsProps) {
   const [open, setOpen] = useState(false);
 
   // Helper for WhatsApp
@@ -101,7 +112,11 @@ END:VCARD`;
         className="h-8 w-8 p-0 rounded-xl transition-all hover:bg-muted"
         title="Edit / Pindah Kamar"
       >
-        <HugeiconsIcon icon={Edit02Icon} size={14} style={{ color: "var(--on-surface-variant)" }} />
+        <HugeiconsIcon
+          icon={Edit02Icon}
+          size={14}
+          style={{ color: "var(--on-surface-variant)" }}
+        />
       </Button>
 
       <EditTenantDialog

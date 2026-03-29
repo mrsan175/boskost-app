@@ -1,7 +1,14 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { payments, rooms, roomTenants, tenants, properties, activityLogs } from "@/lib/db/schema";
+import {
+  payments,
+  rooms,
+  roomTenants,
+  tenants,
+  properties,
+  activityLogs,
+} from "@/lib/db/schema";
 import { currentUser } from "@clerk/nextjs/server";
 import { eq, and, desc, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
@@ -38,12 +45,12 @@ export async function markPaymentAsPaid(paymentId: string) {
   if (!user) throw new Error("Unauthorized");
 
   const [payment] = await db
-    .select({ 
-      id: payments.id, 
+    .select({
+      id: payments.id,
       amount: payments.amount,
       roomNumber: rooms.roomNumber,
       propertyName: properties.name,
-      propertyId: properties.id
+      propertyId: properties.id,
     })
     .from(payments)
     .innerJoin(roomTenants, eq(payments.roomTenantId, roomTenants.id))
@@ -56,8 +63,8 @@ export async function markPaymentAsPaid(paymentId: string) {
 
   await db
     .update(payments)
-    .set({ 
-      status: "paid", 
+    .set({
+      status: "paid",
       paidAt: new Date(),
     })
     .where(eq(payments.id, paymentId));
@@ -117,10 +124,9 @@ export async function generateMonthlyInvoices() {
     .innerJoin(rooms, eq(roomTenants.roomId, rooms.id))
     .innerJoin(properties, eq(rooms.propertyId, properties.id))
     .innerJoin(tenants, eq(roomTenants.tenantId, tenants.id))
-    .where(and(
-      eq(properties.ownerId, user.id),
-      eq(roomTenants.isActive, true)
-    ));
+    .where(
+      and(eq(properties.ownerId, user.id), eq(roomTenants.isActive, true)),
+    );
 
   let generatedCount = 0;
   const now = new Date();
@@ -134,23 +140,25 @@ export async function generateMonthlyInvoices() {
     const [existing] = await db
       .select({ id: payments.id, notes: payments.notes })
       .from(payments)
-      .where(and(
-        eq(payments.roomTenantId, lease.leaseId),
-        sql`
+      .where(
+        and(
+          eq(payments.roomTenantId, lease.leaseId),
+          sql`
           (EXTRACT(MONTH FROM ${payments.dueDate}) = ${currentMonth + 1} 
            AND EXTRACT(YEAR FROM ${payments.dueDate}) = ${currentYear})
           OR
           (${payments.notes} LIKE '%sewa%' AND ${payments.notes} LIKE '%bulan%' 
            AND ${payments.createdAt} > NOW() - INTERVAL '3 months')
-        `
-      ));
+        `,
+        ),
+      );
 
-    // For simplicity: if the lease has an endDate far in the future, 
+    // For simplicity: if the lease has an endDate far in the future,
     // and we already have a payment from THIS lease, we might want to skip if it was a bulk payment.
     if (!existing) {
       // Create new bill
       const dueDate = new Date(currentYear, currentMonth, 5); // Default due on 5th of the month
-      
+
       await db.insert(payments).values({
         id: crypto.randomUUID(),
         roomTenantId: lease.leaseId,

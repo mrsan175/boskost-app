@@ -109,25 +109,22 @@ export function EditTenantDialog({
         // Optimistic Update
         await globalMutate(
           "/api/dashboard/tenants",
-          async (current: any[] | undefined) => {
-            if (!current) return [];
-            return current.map((t) =>
-              t.id === tenant.id ? { ...t, tenantName: updatedName, tenantEmail: updatedEmail, tenantPhone: updatedPhone } : t
-            );
+          async () => {
+             await updateTenant(fd);
+             return undefined; // Revalidate after
           },
           {
             optimisticData: (current: any[] | undefined) => {
               if (!current) return [];
               return current.map((t) =>
-                t.id === tenant.id ? { ...t, tenantName: updatedName, tenantEmail: updatedEmail, tenantPhone: updatedPhone } : t
+                t.id === tenant.id ? { ...t, tenantName: updatedName, email: updatedEmail, phone: updatedPhone } : t
               );
             },
             rollbackOnError: true,
             revalidate: true,
+            populateCache: false,
           }
         );
-
-        await updateTenant(fd);
         toast.success("Informasi penyewa berhasil diperbarui");
         close();
       } catch (err) {
@@ -168,9 +165,9 @@ export function EditTenantDialog({
         // Optimistic Update
         await globalMutate(
           "/api/dashboard/tenants",
-          async (current: any[] | undefined) => {
-            if (!current) return [];
-            return current.filter((t) => t.id !== tenant.id);
+          async () => {
+            await deleteTenant(tenant.id);
+            return undefined;
           },
           {
             optimisticData: (current: any[] | undefined) => {
@@ -179,10 +176,9 @@ export function EditTenantDialog({
             },
             rollbackOnError: true,
             revalidate: true,
+            populateCache: false,
           }
         );
-
-        await deleteTenant(tenant.id);
         toast.success("Data penyewa berhasil dihapus");
         setShowDeleteConfirm(false);
         await globalMutate("/api/dashboard/stats");

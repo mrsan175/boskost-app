@@ -27,7 +27,10 @@ export async function GET() {
       .from(tenants)
       .leftJoin(
         roomTenants,
-        and(eq(tenants.id, roomTenants.tenantId), eq(roomTenants.isActive, true))
+        and(
+          eq(tenants.id, roomTenants.tenantId),
+          eq(roomTenants.isActive, true),
+        ),
       )
       .leftJoin(rooms, eq(roomTenants.roomId, rooms.id))
       .leftJoin(properties, eq(rooms.propertyId, properties.id))

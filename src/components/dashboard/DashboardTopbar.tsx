@@ -1,7 +1,14 @@
 "use client";
 import { useState, useEffect } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Notification01Icon, Search01Icon, Menu01Icon, Cancel01Icon, ArrowExpandIcon, ArrowShrinkIcon } from "@hugeicons/core-free-icons";
+import {
+  Notification01Icon,
+  Search01Icon,
+  Menu01Icon,
+  Cancel01Icon,
+  ArrowExpandIcon,
+  ArrowShrinkIcon,
+} from "@hugeicons/core-free-icons";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { UserButton } from "@clerk/nextjs";
 import { NotificationDropdown } from "@/components/dashboard/NotificationDropdown";
@@ -20,7 +27,11 @@ const tierLabels: Record<string, string> = {
   ENTERPRISE: "Juragan Kost",
 };
 
-export default function DashboardTopbar({ fullName, tier = "FREE", isFree = true }: DashboardTopbarProps) {
+export default function DashboardTopbar({
+  fullName,
+  tier = "FREE",
+  isFree = true,
+}: DashboardTopbarProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
@@ -31,7 +42,8 @@ export default function DashboardTopbar({ fullName, tier = "FREE", isFree = true
       setIsFullscreen(!!document.fullscreenElement);
     };
     document.addEventListener("fullscreenchange", handleFullscreenChange);
-    return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    return () =>
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
   }, []);
 
   const toggleFullscreen = () => {
@@ -91,7 +103,13 @@ export default function DashboardTopbar({ fullName, tier = "FREE", isFree = true
             <HugeiconsIcon icon={Menu01Icon} size={20} />
           </Button>
           <div className="flex flex-col">
-            <p className="text-xs font-bold leading-tight truncate max-w-[100px]" style={{ color: "var(--primary)", fontFamily: "var(--font-display)" }}>
+            <p
+              className="text-xs font-bold leading-tight truncate max-w-[100px]"
+              style={{
+                color: "var(--primary)",
+                fontFamily: "var(--font-display)",
+              }}
+            >
               Boskost
             </p>
           </div>
@@ -135,23 +153,36 @@ export default function DashboardTopbar({ fullName, tier = "FREE", isFree = true
             style={{ color: "var(--on-surface-variant)" }}
             title={isFullscreen ? "Keluar Fullscreen" : "Layar Penuh"}
           >
-            <HugeiconsIcon icon={isFullscreen ? ArrowShrinkIcon : ArrowExpandIcon} size={18} />
+            <HugeiconsIcon
+              icon={isFullscreen ? ArrowShrinkIcon : ArrowExpandIcon}
+              size={18}
+            />
           </Button>
 
           {/* User info */}
           <div className="flex items-center gap-2.5 ml-2">
             <div className="text-right hidden md:block">
-              <p className="text-sm font-bold leading-tight" style={{ color: "var(--on-surface)", fontFamily: "var(--font-display)" }}>
+              <p
+                className="text-sm font-bold leading-tight"
+                style={{
+                  color: "var(--on-surface)",
+                  fontFamily: "var(--font-display)",
+                }}
+              >
                 {fullName}
               </p>
-              <p className="text-[9px] font-bold uppercase" style={{ color: "var(--primary)" }}>
+              <p
+                className="text-[9px] font-bold uppercase"
+                style={{ color: "var(--primary)" }}
+              >
                 {tierLabels[tier] || tier}
               </p>
             </div>
             <UserButton
               appearance={{
                 elements: {
-                  avatarBox: "h-8 w-8 ring-2 ring-orange-200 dark:ring-orange-900",
+                  avatarBox:
+                    "h-8 w-8 ring-2 ring-orange-200 dark:ring-orange-900",
                 },
               }}
             />

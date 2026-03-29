@@ -9,7 +9,7 @@ import {
   CheckmarkCircle01Icon,
   Delete02Icon,
   TickDouble02Icon,
-  WhatsappIcon
+  WhatsappIcon,
 } from "@hugeicons/core-free-icons";
 import { ConfirmDialog } from "@/components/dashboard/ConfirmDialog";
 import { toast } from "sonner";
@@ -46,14 +46,20 @@ export function PaymentRowActions({
 
     // Sanitize phone number: keep only digits
     const cleanPhone = tenantPhone.replace(/\D/g, "");
-    const finalPhone = cleanPhone.startsWith("0") ? `62${cleanPhone.slice(1)}` : cleanPhone;
+    const finalPhone = cleanPhone.startsWith("0")
+      ? `62${cleanPhone.slice(1)}`
+      : cleanPhone;
 
     const formattedAmount = Number(amount).toLocaleString("id-ID");
     const formattedDate = dueDate
-      ? new Date(dueDate).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })
+      ? new Date(dueDate).toLocaleDateString("id-ID", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        })
       : "-";
 
-    const message = `Halo *${tenantName}*,\n\nSemoga harimu menyenangkan! Ini adalah pengingat tagihan sewa bulanan untuk:\n\n*Properti:* ${propertyName || "-"}\n*Kamar:* ${roomNumber || "-"}\n*Total Tagihan:* Rp ${formattedAmount}\n*Jatuh Tempo:* ${formattedDate}\n\nMohon dapat melakukan pembayaran sebelum tanggal jatuh tempo. Jika sudah membayar, abaikan pesan ini.\n\nTerima kasih atas kerjasamanya!\n\n-- *Manajemen ${propertyName || "-"}*`;
+    const message = `Halo *${tenantName}*,\n\nSemoga harimu menyenangkan! Ini adalah pengingat tagihan sewa bulanan untuk:\n\n*Kamar:* ${roomNumber || "-"}\n*Total Tagihan:* Rp ${formattedAmount}\n*Jatuh Tempo:* ${formattedDate}\n\nMohon dapat melakukan pembayaran sebelum tanggal jatuh tempo. Jika sudah membayar, abaikan pesan ini.\n\nTerima kasih atas kerjasamanya!\n\n-- *Manajemen ${propertyName || "-"}*`;
 
     const waUrl = `https://wa.me/${finalPhone}?text=${encodeURIComponent(message)}`;
     window.open(waUrl, "_blank");
@@ -68,19 +74,23 @@ export function PaymentRowActions({
           async (current: any[] | undefined) => {
             if (!current) return [];
             return current.map((p) =>
-              p.id === paymentId ? { ...p, status: "paid", paidAt: new Date().toISOString() } : p
+              p.id === paymentId
+                ? { ...p, status: "paid", paidAt: new Date().toISOString() }
+                : p,
             );
           },
           {
             optimisticData: (current: any[] | undefined) => {
               if (!current) return [];
               return current.map((p) =>
-                p.id === paymentId ? { ...p, status: "paid", paidAt: new Date().toISOString() } : p
+                p.id === paymentId
+                  ? { ...p, status: "paid", paidAt: new Date().toISOString() }
+                  : p,
               );
             },
             rollbackOnError: true,
             revalidate: true,
-          }
+          },
         );
 
         await markPaymentAsPaid(paymentId);
@@ -109,7 +119,7 @@ export function PaymentRowActions({
             },
             rollbackOnError: true,
             revalidate: true,
-          }
+          },
         );
 
         await deletePayment(paymentId);
