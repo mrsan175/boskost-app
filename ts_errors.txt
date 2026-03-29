@@ -1,0 +1,15 @@
+.next/dev/types/validator.ts(80,39): error TS2307: Cannot find module '../../../src/app/api/webhooks/clerk/route.js' or its corresponding type declarations.
+src/app/login/page.tsx(14,3): error TS2724: '"@hugeicons/core-free-icons"' has no exported member named 'AiLoading01Icon'. Did you mean 'Loading01Icon'?
+src/app/login/page.tsx(18,11): error TS2339: Property 'isLoaded' does not exist on type 'SignInSignalValue'.
+src/app/login/page.tsx(18,29): error TS2339: Property 'setActive' does not exist on type 'SignInSignalValue'.
+src/app/login/page.tsx(36,20): error TS2339: Property 'authenticateWithRedirect' does not exist on type 'SignInFutureResource'.
+src/app/login/page.tsx(70,9): error TS2353: Object literal may only specify known properties, and 'password' does not exist in type 'SignInFutureCreateParams'.
+src/app/login/page.tsx(73,18): error TS2339: Property 'status' does not exist on type '{ error: ClerkError | null; }'.
+src/app/login/page.tsx(74,43): error TS2339: Property 'createdSessionId' does not exist on type '{ error: ClerkError | null; }'.
+src/app/register/page.tsx(15,3): error TS2724: '"@hugeicons/core-free-icons"' has no exported member named 'AiLoading01Icon'. Did you mean 'Loading01Icon'?
+src/app/register/page.tsx(19,11): error TS2339: Property 'isLoaded' does not exist on type 'SignUpSignalValue'.
+src/app/register/page.tsx(19,29): error TS2339: Property 'setActive' does not exist on type 'SignUpSignalValue'.
+src/app/register/page.tsx(40,20): error TS2339: Property 'authenticateWithRedirect' does not exist on type 'SignUpFutureResource'.
+src/app/register/page.tsx(76,9): error TS2353: Object literal may only specify known properties, and 'password' does not exist in type 'SignUpFutureCreateParams'.
+src/app/register/page.tsx(80,20): error TS2339: Property 'prepareEmailAddressVerification' does not exist on type 'SignUpFutureResource'.
+src/app/register/page.tsx(97,43): error TS2339: Property 'attemptEmailAddressVerification' does not exist on type 'SignUpFutureResource'.

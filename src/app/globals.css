@@ -1,17 +1,12 @@
-/* --- Google Fonts (must be before tailwindcss) --- */
-@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap");
-
 @import "tailwindcss";
-
 @import "tw-animate-css";
-
 @import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
 
 /* ============================================================
-   THE MODERN ESTATE — Design System
-   "The Digital Concierge"
+   BOSKOST — "Warm Hospitality" Design System
+   (Terracotta, Warm Brown, Beige)
    ============================================================ */
 
 /* ============================================================
@@ -19,594 +14,553 @@
    ============================================================ */
 :root {
   /* --- Core Brand --- */
-  --primary:     oklch(0.205 0 0);   /* deep terracotta */
-  --primary-container:     #c2410c;   /* burnt sienna */
-  --on-primary:            #ffffff;
-  --on-primary-container:  #fff1ec;
+  --primary: #C2410C;
+  /* Terracotta */
+  --primary-container: #ea580c;
+  --on-primary: #ffffff;
+  --on-primary-container: #fff1ec;
 
-  --secondary:     oklch(0.97 0 0);   /* mahogany mid */
-  --secondary-container:   #e8d5c0;
-  --on-secondary:          #ffffff;
-  --on-secondary-container:#3d2a14;
+  --secondary: #78350F;
+  /* Warm Brown */
+  --secondary-container: #d97706;
+  --on-secondary: #ffffff;
+  --on-secondary-container: #451a03;
 
-  --tertiary:              #5a7a5c;   /* muted sage — "Status Hearth" */
-  --tertiary-container:    #d6ead7;
-  --on-tertiary:           #ffffff;
-  --on-tertiary-container: #1b3b1d;
+  --tertiary: #F59E0B;
+  /* Accent: Amber */
+  --tertiary-container: #fef3c7;
+  --on-tertiary: #451a03;
+  --on-tertiary-container: #78350f;
 
-  --error:                 #ba1a1a;
-  --error-container:       #ffdad6;
-  --on-error:              #ffffff;
-  --on-error-container:    #410002;
+  --error: #DC2626;
+  --error-container: #fee2e2;
+  --on-error: #ffffff;
+  --on-error-container: #7f1d1d;
 
-  /* --- Surface Hierarchy (The "Cream" stack) --- */
-  --surface:               #fdf9e9;   /* Level 0 — soul of the brand */
-  --surface-container-low: #f8f4e4;   /* Level 1 — sections */
-  --surface-container:     #f2ecda;   /* Level 1.5 — mid container */
-  --surface-container-high:#ebe3cf;   /* Level 2 — elevated cards */
-  --surface-container-highest: #e3d9c2;
-  --surface-container-lowest: #ffffff; /* Level 2 — pure white cards */
-  --surface-bright:        #fffdf5;
+  /* --- Surface Hierarchy (The "Warm Cream" stack) --- */
+  --surface: #FFFBEB;
+  /* Base background */
+  --surface-container-low: #FFF8D6;
+  /* Level 1 */
+  --surface-container: #FDF4DE;
+  /* Level 1.5 */
+  --surface-container-high: #FCEFD4;
+  /* Level 2 */
+  --surface-container-highest: #FBE9C9;
+  /* Hover states */
+  --surface-container-lowest: #FFFFFF;
+  /* Pure white cards */
+  --surface-bright: #FFFFFF;
 
-  /* --- On-Surface --- */
-  --on-surface:            #1c1c13;
-  --on-surface-variant:    #4f4a3a;
-  --outline:               #7c7561;
-  --outline-variant:       #cec8b4;   /* ghost border — use at 15% opacity */
+  /* --- On-Surface (Text Colors) --- */
+  --on-surface: #451A03;
+  /* Deep Brown for main text */
+  --on-surface-variant: #78350F;
+  /* Warm Brown for muted text */
+  --outline: #D4D4D8;
+  --outline-variant: rgba(120, 53, 15, 0.15);
+  /* Warm ghost border */
 
-  /* --- Background (page root) --- */
-
-  /* --- Glassmorphism — Nav --- */
-  --glass-bg:              rgba(253, 249, 233, 0.80);
-  --glass-blur:            12px;
+  /* --- Glassmorphism --- */
+  --glass-bg: rgba(255, 251, 235, 0.85);
+  --glass-blur: 12px;
 
   /* --- Elevation / Ambient Shadow --- */
-  --shadow-ambient:        0 16px 32px rgba(28, 28, 19, 0.06);
-  --shadow-float:          0 8px 24px  rgba(28, 28, 19, 0.09);
-  --shadow-modal:          0 16px 48px rgba(28, 28, 19, 0.12);
+  --shadow-ambient: 0 16px 32px rgba(69, 26, 3, 0.04);
+  --shadow-float: 0 8px 24px rgba(69, 26, 3, 0.08);
+  --shadow-modal: 0 16px 48px rgba(69, 26, 3, 0.12);
 
-  /* --- Radius Tokens --- */
-  --radius-sm:   0.5rem;    /* 8px  */
-  --radius-md:   0.75rem;   /* 12px */
-  --radius-lg:   1rem;      /* 16px — inner nested elements */
-  --radius-xl:   1.5rem;    /* 24px — main dashboard cards */
-  --radius-full: 9999px;    /* pill buttons */
+  /* --- Radius & Typography Tokens --- */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-full: 9999px;
+  --font-display: var(--font-sans);
+  --font-body: var(--font-sans);
 
-  /* --- Typography --- */
-  --font-display: "Manrope", sans-serif;
-  --font-body:    "Plus Jakarta Sans", sans-serif;
+  /* --- CTA & Status --- */
+  --gradient-cta: linear-gradient(135deg, #ea580c, #c2410c);
+  --gradient-cta-hover: linear-gradient(135deg, #c2410c, #9a3412);
+  --hearth-dot: #16A34A;
+  /* Success green */
+  --hearth-bg: #dcfce7;
 
-  /* --- CTA Gradient --- */
-  --gradient-cta:     linear-gradient(135deg, #9b2f00, #c2410c);
-  --gradient-cta-hover: linear-gradient(135deg, #7a2400, #a63509);
-
-  /* --- Status Hearth pulse color --- */
-  --hearth-dot: #5a7a5c;
-  --hearth-bg:  #d6ead7;
-  --card:     oklch(1 0 0);
-  --card-foreground:     oklch(0.145 0 0);
-  --popover:     oklch(1 0 0);
-  --popover-foreground:     oklch(0.145 0 0);
-  --primary-foreground:     oklch(0.985 0 0);
-  --secondary-foreground:     oklch(0.205 0 0);
-  --muted:     oklch(0.97 0 0);
-  --muted-foreground:     oklch(0.556 0 0);
-  --accent:     oklch(0.97 0 0);
-  --accent-foreground:     oklch(0.205 0 0);
-  --destructive:     oklch(0.577 0.245 27.325);
-  --border:     oklch(0.922 0 0);
-  --input:     oklch(0.922 0 0);
-  --ring:     oklch(0.708 0 0);
-  --chart-1:     oklch(0.87 0 0);
-  --chart-2:     oklch(0.556 0 0);
-  --chart-3:     oklch(0.439 0 0);
-  --chart-4:     oklch(0.371 0 0);
-  --chart-5:     oklch(0.269 0 0);
-  --radius:     0.625rem;
-  --sidebar:     oklch(0.985 0 0);
-  --sidebar-foreground:     oklch(0.145 0 0);
-  --sidebar-primary:     oklch(0.205 0 0);
-  --sidebar-primary-foreground:     oklch(0.985 0 0);
-  --sidebar-accent:     oklch(0.97 0 0);
-  --sidebar-accent-foreground:     oklch(0.205 0 0);
-  --sidebar-border:     oklch(0.922 0 0);
-  --sidebar-ring:     oklch(0.708 0 0);
-  --background:     oklch(1 0 0);
-  --foreground:     oklch(0.145 0 0);
+  /* --- SHADCN INTEGRATION (Mapped to Palet) --- */
+  --background: var(--surface);
+  --foreground: var(--on-surface);
+  --card: var(--surface-container-lowest);
+  --card-foreground: var(--on-surface);
+  --popover: var(--surface-container-lowest);
+  --popover-foreground: var(--on-surface);
+  --primary-foreground: #FFFFFF;
+  --secondary-foreground: #FFFFFF;
+  --muted: var(--surface-container-high);
+  --muted-foreground: var(--on-surface-variant);
+  --accent: var(--surface-container-high);
+  --accent-foreground: var(--on-surface);
+  --destructive: var(--error);
+  --border: var(--outline-variant);
+  --input: var(--outline-variant);
+  --ring: var(--primary);
+  --radius: 0.625rem;
 }
 
 /* ============================================================
    DARK MODE TOKENS
    ============================================================ */
+html[data-theme='dark'],
+.dark {
+  /* --- Core Brand (Dark) --- */
+  --primary: #EA580C;
+  /* Brighter Terracotta for contrast */
+  --primary-container: #7c2d12;
+  --on-primary: #ffffff;
+  --on-primary-container: #ffdbcf;
+
+  --secondary: #D97706;
+  /* Amber/Brown */
+  --secondary-container: #78350f;
+  --on-secondary: #ffffff;
+  --on-secondary-container: #fef3c7;
+
+  --tertiary: #FBBF24;
+  --tertiary-container: #b45309;
+  --on-tertiary: #1c1917;
+  --on-tertiary-container: #fef3c7;
+
+  /* --- Surface Hierarchy (Stone/Ebony stack) --- */
+  --surface: #1C1917;
+  /* Base background */
+  --surface-container-low: #292524;
+  --surface-container: #44403C;
+  --surface-container-high: #57534E;
+  --surface-container-highest: #78716C;
+  --surface-container-lowest: #0C0A09;
+  --surface-bright: #292524;
+
+  /* --- On-Surface (Text Colors) --- */
+  --on-surface: #ffffff;
+  /* Soft warm white */
+  --on-surface-variant: #D6D3D1;
+  /* Muted stone */
+  --outline: #78716C;
+  --outline-variant: rgba(254, 243, 199, 0.15);
+
+  /* --- Core Backgrounds --- */
+  --background: var(--surface);
+  --foreground: var(--on-surface);
+
+  /* --- Glassmorphism & Shadows (Dark) --- */
+  --glass-bg: rgba(28, 25, 23, 0.85);
+  --glass-blur: 16px;
+  --shadow-ambient: 0 16px 40px rgba(0, 0, 0, 0.6);
+  --shadow-float: 0 8px 24px rgba(0, 0, 0, 0.7);
+  --shadow-modal: 0 24px 64px rgba(0, 0, 0, 0.8);
+
+  /* --- SHADCN INTEGRATION (Dark) --- */
+  --card: var(--surface-container-lowest);
+  --card-foreground: var(--on-surface);
+  --popover: var(--surface-container-lowest);
+  --popover-foreground: var(--on-surface);
+  --muted: var(--surface-container-low);
+  --muted-foreground: var(--on-surface-variant);
+  --accent: var(--surface-container-low);
+  --accent-foreground: var(--on-surface);
+  --border: var(--outline-variant);
+  --input: var(--outline-variant);
+  --ring: var(--primary);
+}
+
 @media (prefers-color-scheme: dark) {
-  :root {
-    /* --- Core Brand (dark) --- */
-    --primary:               #ffb59e;   /* warm coral — readable on dark */
-    --primary-container:     #7a2200;   /* deep ember */
-    --on-primary:            #5c1500;
-    --on-primary-container:  #ffdbcf;
-
-    --secondary:             #d9bc9e;
-    --secondary-container:   #5a3d23;
-    --on-secondary:          #3d2008;
-    --on-secondary-container:#f6dcc0;
-
-    --tertiary:              #a3c8a5;   /* sage lifted */
-    --tertiary-container:    #3a5b3c;
-    --on-tertiary:           #0d2f10;
-    --on-tertiary-container: #bfe4c1;
-
-    --error:                 #ffb4ab;
-    --error-container:       #93000a;
-    --on-error:              #690005;
-    --on-error-container:    #ffdad6;
-
-    /* --- Surface Hierarchy (dark "parchment-charcoal" stack) --- */
-    --surface:               #181610;   /* Level 0 — near-black warm */
-    --surface-container-low: #1f1d14;   /* Level 1 */
-    --surface-container:     #26231a;   /* Level 1.5 */
-    --surface-container-high:#2e2b20;   /* Level 2 */
-    --surface-container-highest: #373429;
-    --surface-container-lowest: #12110b; /* deepest layer */
-    --surface-bright:        #302e24;
-
-    /* --- On-Surface (dark) --- */
-    --on-surface:            #e8e3d0;
-    --on-surface-variant:    #cdc7ae;
-    --outline:               #978f78;
-    --outline-variant:       #4a4636;
-
-    /* --- Background --- */
-
-    /* --- Glassmorphism (dark) --- */
-    --glass-bg:              rgba(24, 22, 16, 0.82);
-    --glass-blur:            12px;
-
-    /* --- Elevation / Ambient Shadow (dark) --- */
-    --shadow-ambient:        0 16px 32px rgba(0, 0, 0, 0.32);
-    --shadow-float:          0 8px 24px  rgba(0, 0, 0, 0.40);
-    --shadow-modal:          0 16px 48px rgba(0, 0, 0, 0.52);
-
-    /* --- CTA Gradient (dark — slightly brighter to pop) --- */
-    --gradient-cta:          linear-gradient(135deg, #c2410c, #ea580c);
-    --gradient-cta-hover:    linear-gradient(135deg, #9b2f00, #c2410c);
-
-    /* --- Status Hearth (dark) --- */
-    --hearth-dot: #a3c8a5;
-    --hearth-bg:  #3a5b3c;
+  html:not([data-theme='light']) {
+    --primary: #EA580C;
+    --surface: #1C1917;
+    --background: var(--surface);
+    --foreground: var(--on-surface);
   }
 }
 
 /* ============================================================
    BASE STYLES
    ============================================================ */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+@layer base {
 
-html {
-  scroll-behavior: smooth;
-}
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
 
-body {
-  background-color: var(--background);
-  font-family:      var(--font-body);
-  font-size:        1rem;         /* body-lg baseline */
-  line-height:      1.65;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+  html {
+    scroll-behavior: smooth;
+  }
 
-/* --- Heading scales use display font --- */
-h1, h2, h3, h4, h5, h6,
-.display,
-.headline {
-  font-family: var(--font-display);
-  font-weight: 700;
-  color:        var(--on-surface);
-  line-height:  1.15;
-}
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 
-h1 { font-size: clamp(2.5rem, 5vw, 4rem);   font-weight: 800; }
-h2 { font-size: clamp(1.75rem, 3vw, 2.5rem); }
-h3 { font-size: clamp(1.25rem, 2.5vw, 1.75rem); }
-h4 { font-size: 1.25rem; }
-h5 { font-size: 1.1rem;  font-weight: 600; }
-h6 { font-size: 1rem;    font-weight: 600; }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  .display,
+  .headline {
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--on-surface);
+    line-height: 1.15;
+  }
 
-p {
-  font-family: var(--font-body);
-  color:        var(--on-surface-variant);
-  max-width:    68ch;
+  h1 {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 800;
+  }
+
+  h2 {
+    font-size: clamp(1.75rem, 3vw, 2.5rem);
+  }
+
+  h3 {
+    font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+  }
+
+  h4 {
+    font-size: 1.25rem;
+  }
+
+  h5 {
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  h6 {
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  p {
+    font-family: var(--font-body);
+    color: var(--on-surface-variant);
+    max-width: 68ch;
+  }
 }
 
 /* ============================================================
    @THEME INLINE — Tailwind CSS v4 token bridge
    ============================================================ */
 @theme inline {
-  /* Backgrounds */
-  --color-background:                var(--background);
-  --color-foreground:                var(--foreground);
-  --color-surface:                   var(--surface);
-  --color-surface-bright:            var(--surface-bright);
-  --color-surface-container-lowest:  var(--surface-container-lowest);
-  --color-surface-container-low:     var(--surface-container-low);
-  --color-surface-container:         var(--surface-container);
-  --color-surface-container-high:    var(--surface-container-high);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-surface: var(--surface);
+  --color-surface-bright: var(--surface-bright);
+  --color-surface-container-lowest: var(--surface-container-lowest);
+  --color-surface-container-low: var(--surface-container-low);
+  --color-surface-container: var(--surface-container);
+  --color-surface-container-high: var(--surface-container-high);
   --color-surface-container-highest: var(--surface-container-highest);
 
-  /* Brand */
-  --color-primary:               var(--primary);
-  --color-primary-container:     var(--primary-container);
-  --color-on-primary:            var(--on-primary);
-  --color-on-primary-container:  var(--on-primary-container);
+  --color-primary: var(--primary);
+  --color-primary-container: var(--primary-container);
+  --color-on-primary: var(--on-primary);
+  --color-on-primary-container: var(--on-primary-container);
 
-  --color-secondary:             var(--secondary);
-  --color-secondary-container:   var(--secondary-container);
-  --color-on-secondary:          var(--on-secondary);
-  --color-on-secondary-container:var(--on-secondary-container);
+  --color-secondary: var(--secondary);
+  --color-secondary-container: var(--secondary-container);
+  --color-on-secondary: var(--on-secondary);
+  --color-on-secondary-container: var(--on-secondary-container);
 
-  --color-tertiary:              var(--tertiary);
-  --color-tertiary-container:    var(--tertiary-container);
-  --color-on-tertiary:           var(--on-tertiary);
+  --color-tertiary: var(--tertiary);
+  --color-tertiary-container: var(--tertiary-container);
+  --color-on-tertiary: var(--on-tertiary);
   --color-on-tertiary-container: var(--on-tertiary-container);
 
-  --color-error:                 var(--error);
-  --color-error-container:       var(--error-container);
-  --color-on-error:              var(--on-error);
-  --color-on-error-container:    var(--on-error-container);
+  --color-on-surface: var(--on-surface);
+  --color-on-surface-variant: var(--on-surface-variant);
+  --color-outline: var(--outline);
+  --color-outline-variant: var(--outline-variant);
 
-  /* On-surface */
-  --color-on-surface:            var(--on-surface);
-  --color-on-surface-variant:    var(--on-surface-variant);
-  --color-outline:               var(--outline);
-  --color-outline-variant:       var(--outline-variant);
-
-  /* Fonts */
-  --font-sans:     var(--font-sans);
+  --font-sans: var(--font-sans);
   --font-display: var(--font-display);
-  --font-mono:    ui-monospace, "Fira Code", monospace;
+  --font-mono: ui-monospace, "Fira Code", monospace;
 
-  /* Radius */
-  --radius-sm:   var(--radius-sm);
-  --radius-md:   var(--radius-md);
-  --radius-lg:   var(--radius-lg);
-  --radius-xl:   var(--radius-xl);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
   --radius-full: var(--radius-full);
 
-  /* Shadows */
   --shadow-ambient: var(--shadow-ambient);
-  --shadow-float:   var(--shadow-float);
-  --shadow-modal:   var(--shadow-modal);
-  --font-heading:     var(--font-sans);
-  --color-sidebar-ring:     var(--sidebar-ring);
-  --color-sidebar-border:     var(--sidebar-border);
-  --color-sidebar-accent-foreground:     var(--sidebar-accent-foreground);
-  --color-sidebar-accent:     var(--sidebar-accent);
-  --color-sidebar-primary-foreground:     var(--sidebar-primary-foreground);
-  --color-sidebar-primary:     var(--sidebar-primary);
-  --color-sidebar-foreground:     var(--sidebar-foreground);
-  --color-sidebar:     var(--sidebar);
-  --color-chart-5:     var(--chart-5);
-  --color-chart-4:     var(--chart-4);
-  --color-chart-3:     var(--chart-3);
-  --color-chart-2:     var(--chart-2);
-  --color-chart-1:     var(--chart-1);
-  --color-ring:     var(--ring);
-  --color-input:     var(--input);
-  --color-border:     var(--border);
-  --color-destructive:     var(--destructive);
-  --color-accent-foreground:     var(--accent-foreground);
-  --color-accent:     var(--accent);
-  --color-muted-foreground:     var(--muted-foreground);
-  --color-muted:     var(--muted);
-  --color-secondary-foreground:     var(--secondary-foreground);
-  --color-primary-foreground:     var(--primary-foreground);
-  --color-popover-foreground:     var(--popover-foreground);
-  --color-popover:     var(--popover);
-  --color-card-foreground:     var(--card-foreground);
-  --color-card:     var(--card);
-  --radius-2xl:     calc(var(--radius) * 1.8);
-  --radius-3xl:     calc(var(--radius) * 2.2);
-  --radius-4xl:     calc(var(--radius) * 2.6);
-}
+  --shadow-float: var(--shadow-float);
+  --shadow-modal: var(--shadow-modal);
 
-/* ============================================================
-   COMPONENT STYLES
-   ============================================================ */
-
-/* --- Buttons --- */
-
-/* Primary — gradient pill */
-.btn-primary {
-  display:          inline-flex;
-  align-items:      center;
-  justify-content:  center;
-  gap:              0.5rem;
-  padding:          0.75rem 1.5rem;  /* heavy horizontal padding (24px) */
-  background:       var(--gradient-cta);
-  color:            var(--on-primary);
-  font-family:      var(--font-display);
-  font-weight:      600;
-  font-size:        0.9375rem;
-  border-radius:    var(--radius-full);
-  border:           none;
-  cursor:           pointer;
-  text-decoration:  none;
-  transition:       background 0.25s ease, transform 0.15s ease, box-shadow 0.25s ease;
-  box-shadow:       var(--shadow-float);
-}
-.btn-primary:hover {
-  background:   var(--gradient-cta-hover);
-  transform:    translateY(-1px);
-  box-shadow:   var(--shadow-modal);
-}
-.btn-primary:active { transform: translateY(0); }
-
-/* Secondary — tonal, no border */
-.btn-secondary {
-  display:         inline-flex;
-  align-items:     center;
-  justify-content: center;
-  gap:             0.5rem;
-  padding:         0.75rem 1.5rem;
-  background:      var(--surface-container-highest);
-  color:           var(--on-surface);
-  font-family:     var(--font-display);
-  font-weight:     600;
-  font-size:       0.9375rem;
-  border-radius:   var(--radius-full);
-  border:          none;
-  cursor:          pointer;
-  text-decoration: none;
-  transition:      background 0.2s ease, transform 0.15s ease;
-}
-.btn-secondary:hover {
-  background: var(--surface-container-high);
-  transform:  translateY(-1px);
-}
-
-/* Tertiary — text only, animated underline */
-.btn-tertiary {
-  display:         inline-flex;
-  align-items:     center;
-  gap:             0.375rem;
-  padding:         0.5rem 0;
-  background:      none;
-  border:          none;
-  color:           var(--primary);
-  font-family:     var(--font-display);
-  font-weight:     600;
-  font-size:       0.9375rem;
-  cursor:          pointer;
-  text-decoration: none;
-  position:        relative;
-}
-.btn-tertiary::after {
-  content:    "";
-  position:   absolute;
-  bottom:     0;
-  left:       0;
-  width:      0;
-  height:     2px;
-  background: var(--primary);
-  border-radius: 2px;
-  transition: width 0.25s ease;
-}
-.btn-tertiary:hover::after { width: 100%; }
-
-/* --- Cards --- */
-
-/* Main dashboard card (xl radius, white on cream, no dividers) */
-.card {
-  background:    var(--surface-container-lowest);
-  border-radius: var(--radius-xl);
-  padding:       2rem;
-  box-shadow:    var(--shadow-ambient);
-  /* NO border — use tonal shift instead */
-}
-
-/* Nested inner element */
-.card-inner {
-  background:    var(--surface-container-low);
-  border-radius: var(--radius-lg);
-  padding:       1.25rem;
-}
-
-/* Property listing — separated by spacing, not dividers */
-.property-list {
-  display:        flex;
-  flex-direction: column;
-  gap:            4rem;        /* 64px — strict "no divider" spacing */
-}
-
-/* --- Input Fields — soft-filled --- */
-.input {
-  width:            100%;
-  padding:          0.75rem 1rem;
-  background:       var(--surface-container-high);
-  color:            var(--on-surface);
-  border-radius:    var(--radius-lg);
-  border:           1px solid transparent;
-  font-family:      var(--font-body);
-  font-size:        1rem;
-  outline:          none;
-  transition:       background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-}
-.input::placeholder {
-  color:       var(--on-surface-variant);
-  font-style:  italic;
-}
-.input:focus {
-  background:   var(--surface-container-lowest);
-  border-color: rgba(155, 47, 0, 0.20);  /* primary ghost border 20% */
-  box-shadow:   0 0 0 3px rgba(155, 47, 0, 0.07);
-}
-/* Dark mode focus ring */
-@media (prefers-color-scheme: dark) {
-  .input:focus {
-    border-color: rgba(255, 181, 158, 0.20);
-    box-shadow:   0 0 0 3px rgba(255, 181, 158, 0.07);
-  }
-}
-
-.input-label {
-  display:      block;
-  margin-bottom: 0.375rem;
-  font-family:  var(--font-body);
-  font-size:    0.8125rem;  /* label-md */
-  font-weight:  500;
-  color:        var(--on-surface-variant);
-  letter-spacing: 0.01em;
-}
-
-/* --- Navigation — Glassmorphism --- */
-.nav-glass {
-  position:         sticky;
-  top:              0;
-  z-index:          100;
-  background:       var(--glass-bg);
-  backdrop-filter:  blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
-  border-bottom:    1px solid rgba(206, 200, 180, 0.15); /* outline-variant @ 15% */
-}
-
-/* --- Status Hearth Chip — pulsing "Live" badge --- */
-.status-hearth {
-  display:        inline-flex;
-  align-items:    center;
-  gap:            0.5rem;
-  padding:        0.375rem 0.875rem;
-  background:     var(--hearth-bg);
-  color:          var(--on-tertiary-container);
-  border-radius:  var(--radius-full);
-  font-family:    var(--font-body);
-  font-size:      0.8125rem;
-  font-weight:    600;
-}
-
-.status-hearth__dot {
-  width:           8px;
-  height:          8px;
-  border-radius:   50%;
-  background:      var(--hearth-dot);
-  animation:       hearth-pulse 2s ease-in-out infinite;
-}
-
-@keyframes hearth-pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50%       { opacity: 0.5; transform: scale(1.35); }
-}
-
-/* --- Modals / Floating overlays — tonal ambient shadow --- */
-.modal {
-  background:    var(--surface-container-lowest);
-  border-radius: var(--radius-xl);
-  box-shadow:    var(--shadow-modal);
-  /* The "Ghost Border" fallback for accessibility */
-  outline:       1px solid rgba(206, 200, 180, 0.15);
-}
-
-/* ============================================================
-   SURFACE UTILITY HELPERS
-   (complement Tailwind utilities from @theme)
-   ============================================================ */
-.bg-surface          { background-color: var(--surface); }
-.bg-surface-low      { background-color: var(--surface-container-low); }
-.bg-surface-mid      { background-color: var(--surface-container); }
-.bg-surface-high     { background-color: var(--surface-container-high); }
-.bg-surface-highest  { background-color: var(--surface-container-highest); }
-.bg-surface-card     { background-color: var(--surface-container-lowest); }
-
-.text-primary        { color: var(--primary); }
-.text-on-surface     { color: var(--on-surface); }
-.text-muted          { color: var(--on-surface-variant); }
-
-/* ============================================================
-   TYPOGRAPHY SCALE HELPERS
-   ============================================================ */
-.display-lg {
-  font-family: var(--font-display);
-  font-size:   clamp(3rem, 6vw, 5rem);
-  font-weight: 800;
-  line-height: 1.05;
-  color:       var(--on-surface);
-}
-
-.headline-lg {
-  font-family: var(--font-display);
-  font-size:   clamp(1.75rem, 3vw, 2.5rem);
-  font-weight: 700;
-  color:       var(--on-surface);
-}
-
-.body-lg {
-  font-family: var(--font-body);
-  font-size:   1rem;
-  line-height: 1.75;
-  color:       var(--on-surface-variant);
-}
-
-.label-md {
-  font-family:    var(--font-body);
-  font-size:      0.8125rem;
-  font-weight:    500;
-  letter-spacing: 0.02em;
-  color:          var(--on-surface-variant);
+  /* Shadcn bindings */
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
 }
 
 /* ============================================================
    SELECTION COLOR
    ============================================================ */
 ::selection {
-  background: rgba(155, 47, 0, 0.18);
-  color:      var(--on-surface);
+  background: rgba(194, 65, 12, 0.2);
+  color: var(--on-surface);
 }
 
-.dark {
-  --background:     oklch(0.145 0 0);
-  --foreground:     oklch(0.985 0 0);
-  --card:     oklch(0.205 0 0);
-  --card-foreground:     oklch(0.985 0 0);
-  --popover:     oklch(0.205 0 0);
-  --popover-foreground:     oklch(0.985 0 0);
-  --primary:     oklch(0.922 0 0);
-  --primary-foreground:     oklch(0.205 0 0);
-  --secondary:     oklch(0.269 0 0);
-  --secondary-foreground:     oklch(0.985 0 0);
-  --muted:     oklch(0.269 0 0);
-  --muted-foreground:     oklch(0.708 0 0);
-  --accent:     oklch(0.269 0 0);
-  --accent-foreground:     oklch(0.985 0 0);
-  --destructive:     oklch(0.704 0.191 22.216);
-  --border:     oklch(1 0 0 / 10%);
-  --input:     oklch(1 0 0 / 15%);
-  --ring:     oklch(0.556 0 0);
-  --chart-1:     oklch(0.87 0 0);
-  --chart-2:     oklch(0.556 0 0);
-  --chart-3:     oklch(0.439 0 0);
-  --chart-4:     oklch(0.371 0 0);
-  --chart-5:     oklch(0.269 0 0);
-  --sidebar:     oklch(0.205 0 0);
-  --sidebar-foreground:     oklch(0.985 0 0);
-  --sidebar-primary:     oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground:     oklch(0.985 0 0);
-  --sidebar-accent:     oklch(0.269 0 0);
-  --sidebar-accent-foreground:     oklch(0.985 0 0);
-  --sidebar-border:     oklch(1 0 0 / 10%);
-  --sidebar-ring:     oklch(0.556 0 0);
+
+/* ============================================================
+   CUSTOM KEYFRAME ANIMATIONS
+   ============================================================ */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-12px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+@keyframes float-delayed {
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(32px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes reveal-left {
+  from {
+    opacity: 0;
+    transform: translateX(-32px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes reveal-right {
+  from {
+    opacity: 0;
+    transform: translateX(32px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes shine {
+  0% {
+    transform: translateX(-100%) skewX(-12deg);
+  }
+
+  100% {
+    transform: translateX(300%) skewX(-12deg);
+  }
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes counter-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes glow-pulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(234, 88, 12, 0.3);
+  }
+
+  50% {
+    box-shadow: 0 0 40px rgba(234, 88, 12, 0.6), 0 0 80px rgba(234, 88, 12, 0.2);
+  }
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float-delayed 7s ease-in-out infinite 1.5s;
+}
+
+.animate-reveal-up {
+  animation: reveal-up 0.7s ease both;
+}
+
+.animate-reveal-left {
+  animation: reveal-left 0.7s ease both;
+}
+
+.animate-reveal-right {
+  animation: reveal-right 0.7s ease both;
+}
+
+.animate-marquee {
+  animation: marquee 24s linear infinite;
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+.animate-spin-slow {
+  animation: spin-slow 12s linear infinite;
+}
+
+.delay-100 {
+  animation-delay: 0.1s;
+}
+
+.delay-200 {
+  animation-delay: 0.2s;
+}
+
+.delay-300 {
+  animation-delay: 0.3s;
+}
+
+.delay-400 {
+  animation-delay: 0.4s;
+}
+
+.delay-500 {
+  animation-delay: 0.5s;
+}
+
+.delay-700 {
+  animation-delay: 0.7s;
+}
+
+/* Shine sweep on hover */
+.shine-on-hover {
+  position: relative;
+  overflow: hidden;
+}
+
+.shine-on-hover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.2) 50%, transparent 100%);
+  transform: translateX(-100%) skewX(-12deg);
+  transition: none;
+}
+
+.shine-on-hover:hover::after {
+  animation: shine 0.6s ease forwards;
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
   html {
     @apply font-sans;
   }
+}
+
+/* ============================================================
+   CUSTOM SCROLLBAR — placed after all @layer to win specificity
+   ============================================================ */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #C2410C transparent;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #C2410C;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #ea580c;
 }
