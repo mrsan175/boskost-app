@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { User02Icon, Calendar01Icon } from "@hugeicons/core-free-icons";
+import { mutate as globalMutate } from "swr";
 
 import { LeaseDurationSelector, LEASE_PRESETS as PRESETS, addDuration, type DurationPreset } from "@/components/dashboard/LeaseDurationSelector";
 
@@ -110,15 +111,43 @@ export function SetOccupancyDialog({
     formData.set("roomId", roomId);
     formData.set("startDate", startDate);
     formData.set("endDate", endDate);
+    // Close modal and reset immediately for instant feel
+    onOpenChange(false);
+    handleReset();
+
     startTransition(async () => {
       try {
-        await setRoomOccupied(formData);
+        // Correct SWR Pattern: Pass the promise to mutate
+        // This ensures SWR waits for the server action to finish BEFORE revalidating
+        await globalMutate(
+          "/api/dashboard/rooms",
+          setRoomOccupied(formData), // The server action promise
+          {
+            optimisticData: (current: any[] | undefined) => {
+              if (!current) return [];
+              return current.map((r) => {
+                if (r.id === roomId) {
+                   return { 
+                    ...r, 
+                    status: "occupied", 
+                    tenantName: tenantName,
+                    startDate: startDate,
+                    endDate: endDate || null
+                  };
+                }
+                return r;
+              });
+            },
+            rollbackOnError: true,
+            revalidate: true,
+            populateCache: false, // Don't use server action result as the rooms list
+          }
+        );
+
         toast.success("Penyewa berhasil ditetapkan ke kamar");
-        onOpenChange(false);
-        handleReset();
+        globalMutate("/api/dashboard/stats");
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Terjadi kesalahan");
-        toast.error("Gagal menetapkan penyewa");
+        toast.error(err instanceof Error ? err.message : "Gagal menetapkan penyewa");
       }
     });
   }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition, useEffect } from "react";
+import { mutate as globalMutate } from "swr";
 import { updateTenant, moveTenantToRoom, deleteTenant } from "@/lib/actions/tenant";
 import { toast } from "sonner";
 import {
@@ -99,8 +100,33 @@ export function EditTenantDialog({
     fd.set("startDate", tenant.startDate || today);
     fd.set("endDate", infoEndDate);
 
+    const updatedName = fd.get("name") as string;
+    const updatedEmail = fd.get("email") as string;
+    const updatedPhone = fd.get("phone") as string;
+
     startTransition(async () => {
       try {
+        // Optimistic Update
+        await globalMutate(
+          "/api/dashboard/tenants",
+          async (current: any[] | undefined) => {
+            if (!current) return [];
+            return current.map((t) =>
+              t.id === tenant.id ? { ...t, tenantName: updatedName, tenantEmail: updatedEmail, tenantPhone: updatedPhone } : t
+            );
+          },
+          {
+            optimisticData: (current: any[] | undefined) => {
+              if (!current) return [];
+              return current.map((t) =>
+                t.id === tenant.id ? { ...t, tenantName: updatedName, tenantEmail: updatedEmail, tenantPhone: updatedPhone } : t
+              );
+            },
+            rollbackOnError: true,
+            revalidate: true,
+          }
+        );
+
         await updateTenant(fd);
         toast.success("Informasi penyewa berhasil diperbarui");
         close();
@@ -139,9 +165,27 @@ export function EditTenantDialog({
   async function handleDelete() {
     startTransition(async () => {
       try {
+        // Optimistic Update
+        await globalMutate(
+          "/api/dashboard/tenants",
+          async (current: any[] | undefined) => {
+            if (!current) return [];
+            return current.filter((t) => t.id !== tenant.id);
+          },
+          {
+            optimisticData: (current: any[] | undefined) => {
+              if (!current) return [];
+              return current.filter((t) => t.id !== tenant.id);
+            },
+            rollbackOnError: true,
+            revalidate: true,
+          }
+        );
+
         await deleteTenant(tenant.id);
         toast.success("Data penyewa berhasil dihapus");
         setShowDeleteConfirm(false);
+        await globalMutate("/api/dashboard/stats");
         close();
       } catch (err) {
         setError(err instanceof Error ? err.message : "Terjadi kesalahan");

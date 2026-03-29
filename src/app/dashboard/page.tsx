@@ -30,59 +30,43 @@ export default async function DashboardPage() {
     const isFree = !userData || userData.subscriptionTier === "FREE";
 
     return (
-        <div style={{ background: "var(--surface)", fontFamily: "var(--font-body)" }}>
-            <DashboardSidebar isFree={isFree} />
-            <DashboardTopbar fullName={fullName} tier={userData?.subscriptionTier} />
-
-            {/* Main Content */}
-            <main className="min-h-screen p-4 sm:p-8 pt-24 lg:pt-[88px] lg:ml-64 transition-all duration-300">
-
-                {/* Welcome Header */}
-                <header className="mb-8 lg:mb-10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-                    <div>
-                        <h2
-                            className="text-3xl font-extrabold tracking-tight"
-                            style={{ color: "var(--on-surface)", fontFamily: "var(--font-display)" }}
-                        >
-                            Selamat datang, {firstName}!
-                        </h2>
-                        <p className="mt-1 text-sm" style={{ color: "var(--on-surface-variant)" }}>
-                            Berikut adalah informasi properti Anda hari ini.
-                        </p>
-                    </div>
-                    {/* <Button
-                        className="shine-on-hover rounded-full px-6 gap-2 font-bold text-white shadow-lg"
-                        style={{ background: "var(--gradient-cta)" }}
+        <div style={{ background: "transparent" }}>
+            {/* Welcome Header */}
+            <header className="mb-8 lg:mb-10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+                <div>
+                    <h2
+                        className="text-3xl font-extrabold tracking-tight"
+                        style={{ color: "var(--on-surface)", fontFamily: "var(--font-display)" }}
                     >
-                        <HugeiconsIcon icon={Add01Icon} size={16} />
-                        Tambah Properti
-                    </Button> */}
-                </header>
-
-                {/* ── Stat Cards ── */}
-                <StatCards />
-
-                {/* ── Dashboard Content Grid ── */}
-                <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-
-                    {/* Left: Main Metrics (2/3 width) */}
-                    <section className="space-y-8 lg:col-span-2">
-                        <RevenueOverview />
-                        <RoomOverview />
-                        <PropertyPerformance />
-                    </section>
-
-                    {/* Right: Sidebar Activity (1/3 width) */}
-                    <aside>
-                        <ActivityFeed />
-                    </aside>
-
+                        Selamat datang, {firstName}!
+                    </h2>
+                    <p className="mt-1 text-sm" style={{ color: "var(--on-surface-variant)" }}>
+                        Berikut adalah informasi properti Anda hari ini.
+                    </p>
                 </div>
+            </header>
 
+            {/* ── Stat Cards ── */}
+            <StatCards />
 
-                <div className="h-12" />
-            </main>
+            {/* ── Dashboard Content Grid ── */}
+            <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
 
+                {/* Left: Main Metrics (2/3 width) */}
+                <section className="space-y-8 lg:col-span-2">
+                    <RevenueOverview />
+                    <RoomOverview />
+                    <PropertyPerformance />
+                </section>
+
+                {/* Right: Sidebar Activity (1/3 width) */}
+                <aside>
+                    <ActivityFeed />
+                </aside>
+
+            </div>
+
+            <div className="h-12" />
         </div>
     );
 }

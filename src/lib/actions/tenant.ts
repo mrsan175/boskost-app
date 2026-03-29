@@ -42,7 +42,7 @@ export async function updateTenant(formData: FormData) {
       .where(and(eq(roomTenants.tenantId, tenantId), eq(roomTenants.isActive, true)));
   }
 
-  revalidatePath("/dashboard/tenants");
+  revalidatePath("/dashboard", "layout");
 }
 
 // ─── Move Tenant to Another Room ───────────────────────────────────────────────
@@ -125,10 +125,7 @@ export async function moveTenantToRoom(formData: FormData) {
     description: `Mulai: ${startDate}${endDate ? ` • Berakhir: ${endDate}` : ""}`,
   });
 
-  revalidatePath("/dashboard");
-  revalidatePath("/dashboard/tenants");
-  revalidatePath("/dashboard/properties");
-  revalidatePath(`/dashboard/properties/${newRoom.propertyId}`);
+  revalidatePath("/dashboard", "layout");
 }
 
 // ─── Delete Tenant ──────────────────────────────────────────────────────────────
@@ -159,7 +156,5 @@ export async function deleteTenant(tenantId: string) {
   // Delete tenant (cascades to room_tenants)
   await db.delete(tenants).where(eq(tenants.id, tenantId));
 
-  revalidatePath("/dashboard");
-  revalidatePath("/dashboard/tenants");
-  revalidatePath("/dashboard/properties");
+  revalidatePath("/dashboard", "layout");
 }

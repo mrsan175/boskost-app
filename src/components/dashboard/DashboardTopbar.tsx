@@ -1,11 +1,11 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Notification01Icon, Search01Icon, Menu01Icon, Cancel01Icon } from "@hugeicons/core-free-icons";
+import { Notification01Icon, Search01Icon, Menu01Icon, Cancel01Icon, ArrowExpandIcon, ArrowShrinkIcon } from "@hugeicons/core-free-icons";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { UserButton } from "@clerk/nextjs";
+import { NotificationDropdown } from "@/components/dashboard/NotificationDropdown";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { SidebarContent } from "@/components/dashboard/Sidebar";
 
 interface DashboardTopbarProps {
@@ -22,6 +22,50 @@ const tierLabels: Record<string, string> = {
 
 export default function DashboardTopbar({ fullName, tier = "FREE", isFree = true }: DashboardTopbarProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
+  }, []);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch((err) => {
+        console.error(`Error attempting to enable fullscreen: ${err.message}`);
+      });
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+  };
+
+  // Prevent hydration mismatch
+  if (!isMounted) {
+    return (
+      <header
+        className="fixed top-0 right-0 z-40 flex items-center justify-between px-4 sm:px-8 py-3 w-full lg:left-64 lg:w-auto"
+        style={{
+          background: "var(--glass-bg)",
+          backdropFilter: "blur(var(--glass-blur))",
+          WebkitBackdropFilter: "blur(var(--glass-blur))",
+          borderBottom: "1px solid var(--outline-variant)",
+          boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+        }}
+      >
+        <div className="flex-1" />
+        <div className="flex items-center gap-4">
+          <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
+        </div>
+      </header>
+    );
+  }
 
   return (
     <>
@@ -80,6 +124,19 @@ export default function DashboardTopbar({ fullName, tier = "FREE", isFree = true
           <div className="hidden sm:block">
             <ThemeSwitcher />
           </div>
+
+          <NotificationDropdown />
+
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleFullscreen}
+            className="hidden sm:flex rounded-full h-9 w-9"
+            style={{ color: "var(--on-surface-variant)" }}
+            title={isFullscreen ? "Keluar Fullscreen" : "Layar Penuh"}
+          >
+            <HugeiconsIcon icon={isFullscreen ? ArrowShrinkIcon : ArrowExpandIcon} size={18} />
+          </Button>
 
           {/* User info */}
           <div className="flex items-center gap-2.5 ml-2">

@@ -4,13 +4,16 @@ import useSWR from "swr";
 import { fetcher } from "@/lib/fetcher";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   BrickWallIcon,
   CheckmarkCircle01Icon,
   Wrench01Icon,
+  ArrowRight01Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import Link from "next/link";
 
 const statusConfig = {
   available: {
@@ -66,7 +69,7 @@ export default function RoomOverview() {
     return (
       <Card
         className="rounded-4xl border"
-        style={{ borderColor: "var(--outline-variant)" }}
+        style={{ background: "var(--surface-container-low)", borderColor: "var(--outline-variant)" }}
       >
         <CardHeader>
           <CardTitle style={{ fontFamily: "var(--font-display)" }}>Status Kamar</CardTitle>
@@ -74,13 +77,13 @@ export default function RoomOverview() {
         </CardHeader>
         <CardContent>
           <div className="flex flex-col items-center justify-center py-16 text-center gap-3">
-             <HugeiconsIcon icon={BrickWallIcon} size={48} style={{ color: "var(--on-surface-variant)", opacity: 0.3 }} />
-             <p className="text-sm font-bold" style={{ color: "var(--on-surface-variant)" }}>
-               Belum ada kamar
-             </p>
-             <p className="text-xs" style={{ color: "var(--on-surface-variant)", opacity: 0.7 }}>
-               Tambahkan properti dan kamar untuk mulai memantau statusnya di sini.
-             </p>
+            <HugeiconsIcon icon={BrickWallIcon} size={48} style={{ color: "var(--on-surface-variant)", opacity: 0.3 }} />
+            <p className="text-sm font-bold" style={{ color: "var(--on-surface-variant)" }}>
+              Belum ada kamar
+            </p>
+            <p className="text-xs" style={{ color: "var(--on-surface-variant)", opacity: 0.7 }}>
+              Tambahkan properti dan kamar untuk mulai memantau statusnya di sini.
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -90,23 +93,35 @@ export default function RoomOverview() {
   return (
     <Card
       className={`rounded-4xl border ${isLoading ? "animate-pulse" : ""}`}
-      style={{ borderColor: "var(--outline-variant)" }}
+      style={{ background: "var(--surface-container-low)", borderColor: "var(--outline-variant)" }}
     >
-      <CardHeader className="pb-4">
-        <div className="flex items-start justify-between">
-          <div>
+      <CardHeader className="flex flex-row items-center justify-between pb-4">
+        <div className="space-y-1">
+          <div className="flex items-center gap-3">
             <CardTitle style={{ fontFamily: "var(--font-display)" }}>Status Kamar</CardTitle>
-            <CardDescription>Ringkasan ketersediaan kamar di semua properti kamu</CardDescription>
+            <Badge
+              variant="secondary"
+              className="rounded-full px-2.5 py-0.5 text-[10px] font-bold shrink-0"
+              style={{ background: "var(--surface-container-highest)", color: "var(--on-surface-variant)" }}
+            >
+              {totalRooms} Kamar
+            </Badge>
           </div>
-          <Badge
-            className="text-xs font-bold px-3 py-1"
-            style={{ background: "var(--surface-container)", color: "var(--on-surface)" }}
-          >
-            {totalRooms} Kamar
-          </Badge>
+          <CardDescription className="hidden sm:block">Ringkasan ketersediaan kamar di semua properti kamu</CardDescription>
         </div>
+        <Link
+          href="/dashboard/rooms"
+          className="flex items-center gap-1 text-xs font-bold hover:underline shrink-0"
+          style={{ color: "var(--primary)" }}
+        >
+          Lihat Semua <HugeiconsIcon icon={ArrowRight01Icon} size={14} />
+        </Link>
+      </CardHeader>
 
-        <div className="mt-4 grid grid-cols-3 gap-3">
+      <Separator style={{ background: "var(--outline-variant)" }} />
+
+      <div className="px-6 pt-4">
+        <div className="grid grid-cols-3 gap-3">
           {(["occupied", "available", "maintenance"] as const).map((s) => {
             const cfg = statusConfig[s];
             const count = s === "occupied" ? totalOccupied : s === "available" ? totalAvailable : totalMaintenance;
@@ -124,9 +139,9 @@ export default function RoomOverview() {
                   </p>
                 </div>
                 {!isLoading ? (
-                    <p className="text-2xl font-extrabold" style={{ color: cfg.color, fontFamily: "var(--font-display)" }}>
-                        {count}
-                    </p>
+                  <p className="text-2xl font-extrabold" style={{ color: cfg.color, fontFamily: "var(--font-display)" }}>
+                    {count}
+                  </p>
                 ) : <div className="h-8 w-12 bg-muted rounded mt-1" />}
                 <div className="h-1 w-full rounded-full overflow-hidden" style={{ background: "rgba(0,0,0,0.08)" }}>
                   <div className="h-full rounded-full" style={{ width: `${pct}%`, background: cfg.color }} />
@@ -136,11 +151,11 @@ export default function RoomOverview() {
             );
           })}
         </div>
-      </CardHeader>
+      </div>
 
       <CardContent className="space-y-6">
         {isLoading ? (
-            <div className="h-48 bg-muted rounded-3xl" />
+          <div className="h-48 bg-muted rounded-3xl" />
         ) : (
           groups.map((group) => (
             <div key={group.propertyId}>
@@ -160,7 +175,7 @@ export default function RoomOverview() {
                         className="aspect-square rounded-xl flex flex-col items-center justify-center border-2 text-center cursor-pointer transition-all hover:scale-110 hover:shadow-md border-none"
                         style={{ background: cfg.bg, outline: `2px solid ${cfg.border}`, outlineOffset: "-2px" }}
                       >
-                         <span className="text-[10px] font-extrabold leading-tight" style={{ color: cfg.color }}>{room.roomNumber}</span>
+                        <span className="text-[10px] font-extrabold leading-tight" style={{ color: cfg.color }}>{room.roomNumber}</span>
                       </TooltipTrigger>
                       <TooltipContent>
                         <div className="text-center">
@@ -176,12 +191,12 @@ export default function RoomOverview() {
           ))
         )}
         <div className="flex items-center gap-4 pt-2">
-            {(["occupied", "available", "maintenance"] as const).map((s) => (
-                <div key={s} className="flex items-center gap-1.5">
-                    <div className="h-2.5 w-2.5 rounded-sm" style={{ background: statusConfig[s].color }} />
-                    <span className="text-[10px] font-bold" style={{ color: "var(--on-surface-variant)" }}>{statusConfig[s].label}</span>
-                </div>
-            ))}
+          {(["occupied", "available", "maintenance"] as const).map((s) => (
+            <div key={s} className="flex items-center gap-1.5">
+              <div className="h-2.5 w-2.5 rounded-sm" style={{ background: statusConfig[s].color }} />
+              <span className="text-[10px] font-bold" style={{ color: "var(--on-surface-variant)" }}>{statusConfig[s].label}</span>
+            </div>
+          ))}
         </div>
       </CardContent>
     </Card>

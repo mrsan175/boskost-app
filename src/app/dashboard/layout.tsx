@@ -58,15 +58,40 @@ export default async function DashboardLayout({
       .then(rows => rows.map(r => ({ ...r.rooms, propertyName: r.properties.name })));
   }
 
+  const [userData] = await db
+    .select({ subscriptionTier: users.subscriptionTier })
+    .from(users)
+    .where(eq(users.id, user.id));
+
+  const isFree = !userData || userData.subscriptionTier === "FREE";
+  const fullName = [user.firstName, user.lastName].filter(Boolean).join(" ");
+
   return (
-    <>
+    <div className="min-h-screen bg-surface" style={{ fontFamily: "var(--font-body)" }}>
       <LimitManagementModal 
         open={syncResult?.actionNeeded ?? false} 
         properties={allProperties}
         rooms={allRooms}
         tier={syncResult?.tier ?? "FREE"}
       />
-      {children}
-    </>
+      
+      <DashboardSidebar isFree={isFree} />
+      
+      <div className="flex-1 flex flex-col min-w-0 transition-all duration-300 lg:ml-64">
+        <DashboardTopbar 
+          fullName={fullName} 
+          tier={userData?.subscriptionTier} 
+          isFree={isFree} 
+        />
+        
+        {/* Main Content Area */}
+        <main className="flex-1 p-4 sm:p-8 pt-24 lg:pt-[88px]">
+          {children}
+        </main>
+      </div>
+    </div>
   );
 }
+
+import DashboardSidebar from "@/components/dashboard/Sidebar";
+import DashboardTopbar from "@/components/dashboard/DashboardTopbar";
