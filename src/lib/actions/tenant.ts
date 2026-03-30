@@ -1,8 +1,14 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { tenants, roomTenants, rooms, properties, activityLogs } from "@/lib/db/schema";
-import { currentUser } from "@clerk/nextjs/server";
+import {
+  tenants,
+  roomTenants,
+  rooms,
+  properties,
+  activityLogs,
+} from "@/lib/db/schema";
+import { currentUser } from "@/lib/serverAuth";
 import { eq, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
@@ -39,7 +45,9 @@ export async function updateTenant(formData: FormData) {
     await db
       .update(roomTenants)
       .set({ startDate, endDate, updatedAt: new Date() })
-      .where(and(eq(roomTenants.tenantId, tenantId), eq(roomTenants.isActive, true)));
+      .where(
+        and(eq(roomTenants.tenantId, tenantId), eq(roomTenants.isActive, true)),
+      );
   }
 
   revalidatePath("/dashboard", "layout");
@@ -68,7 +76,11 @@ export async function moveTenantToRoom(formData: FormData) {
 
   // Verify new room belongs to user
   const [newRoom] = await db
-    .select({ id: rooms.id, roomNumber: rooms.roomNumber, propertyId: rooms.propertyId })
+    .select({
+      id: rooms.id,
+      roomNumber: rooms.roomNumber,
+      propertyId: rooms.propertyId,
+    })
     .from(rooms)
     .innerJoin(properties, eq(rooms.propertyId, properties.id))
     .where(and(eq(rooms.id, newRoomId), eq(properties.ownerId, user.id)));
@@ -78,13 +90,21 @@ export async function moveTenantToRoom(formData: FormData) {
   const [oldLease] = await db
     .select({ roomId: roomTenants.roomId })
     .from(roomTenants)
-    .where(and(eq(roomTenants.tenantId, tenantId), eq(roomTenants.isActive, true)));
+    .where(
+      and(eq(roomTenants.tenantId, tenantId), eq(roomTenants.isActive, true)),
+    );
 
   if (oldLease) {
     await db
       .update(roomTenants)
-      .set({ isActive: false, endDate: new Date().toISOString().split("T")[0], updatedAt: new Date() })
-      .where(and(eq(roomTenants.tenantId, tenantId), eq(roomTenants.isActive, true)));
+      .set({
+        isActive: false,
+        endDate: new Date().toISOString().split("T")[0],
+        updatedAt: new Date(),
+      })
+      .where(
+        and(eq(roomTenants.tenantId, tenantId), eq(roomTenants.isActive, true)),
+      );
 
     // Set old room back to available
     await db
@@ -97,7 +117,9 @@ export async function moveTenantToRoom(formData: FormData) {
   await db
     .update(roomTenants)
     .set({ isActive: false, updatedAt: new Date() })
-    .where(and(eq(roomTenants.roomId, newRoomId), eq(roomTenants.isActive, true)));
+    .where(
+      and(eq(roomTenants.roomId, newRoomId), eq(roomTenants.isActive, true)),
+    );
 
   // Create new lease
   await db.insert(roomTenants).values({
@@ -144,7 +166,9 @@ export async function deleteTenant(tenantId: string) {
   const activeLeases = await db
     .select({ roomId: roomTenants.roomId })
     .from(roomTenants)
-    .where(and(eq(roomTenants.tenantId, tenantId), eq(roomTenants.isActive, true)));
+    .where(
+      and(eq(roomTenants.tenantId, tenantId), eq(roomTenants.isActive, true)),
+    );
 
   for (const lease of activeLeases) {
     await db

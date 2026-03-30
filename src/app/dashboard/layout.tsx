@@ -1,10 +1,12 @@
-import { currentUser } from "@clerk/nextjs/server";
+import { currentUser } from "@/lib/serverAuth";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { rooms, properties, users } from "@/lib/db/schema";
 import { syncUserTierAndLimits } from "@/lib/actions/auth";
 import { LimitManagementModal } from "@/components/dashboard/LimitManagementModal";
 import { eq } from "drizzle-orm";
+import DashboardSidebar from "@/components/dashboard/Sidebar";
+import DashboardTopbar from "@/components/dashboard/DashboardTopbar";
 
 export default async function DashboardLayout({
   children,
@@ -17,23 +19,23 @@ export default async function DashboardLayout({
     redirect("/");
   }
 
-  // Sync user data to database on dashboard load (no webhooks needed)
+  // Ensure DB user row exists / update timestamps (serverAuth returns DB user shape)
   await db
     .insert(users)
     .values({
       id: user.id,
-      username: user.username,
-      email: user.emailAddresses[0]?.emailAddress ?? "",
-      name: `${user.firstName || ""} ${user.lastName || ""}`.trim(),
-      imageUrl: user.imageUrl,
+      username: user.username ?? null,
+      email: user.email ?? "",
+      name: user.name ?? "",
+      imageUrl: user.imageUrl ?? null,
     })
     .onConflictDoUpdate({
       target: users.id,
       set: {
-        username: user.username,
-        email: user.emailAddresses[0]?.emailAddress ?? "",
-        name: `${user.firstName || ""} ${user.lastName || ""}`.trim(),
-        imageUrl: user.imageUrl,
+        username: user.username ?? null,
+        email: user.email ?? "",
+        name: user.name ?? "",
+        imageUrl: user.imageUrl ?? null,
         updatedAt: new Date(),
       },
     });
@@ -66,7 +68,7 @@ export default async function DashboardLayout({
     .where(eq(users.id, user.id));
 
   const isFree = !userData || userData.subscriptionTier === "FREE";
-  const fullName = [user.firstName, user.lastName].filter(Boolean).join(" ");
+  const fullName = user.name || "Pemilik Kost";
 
   return (
     <div
@@ -90,11 +92,11 @@ export default async function DashboardLayout({
         />
 
         {/* Main Content Area */}
-        <main className="flex-1 p-4 sm:p-8 pt-24 lg:pt-[88px]">{children}</main>
+        {/* Ensure enough top padding so fixed DashboardTopbar doesn't overlap content */}
+        <main className="flex-1 p-4 sm:p-8 pt-24 lg:pt-24 md:pt-24">
+          {children}
+        </main>
       </div>
     </div>
   );
 }
-
-import DashboardSidebar from "@/components/dashboard/Sidebar";
-import DashboardTopbar from "@/components/dashboard/DashboardTopbar";

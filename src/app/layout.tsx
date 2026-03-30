@@ -10,8 +10,7 @@ import NextTopLoader from "nextjs-toploader";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "sonner";
 
-
-import { ClerkProvider } from "@clerk/nextjs";
+// Migrated away from ClerkProvider; using local auth
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -29,7 +28,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
+    <>
       <html
         lang="en"
         className={cn("h-full", "antialiased", manrope.variable, "font-sans")}
@@ -46,39 +45,39 @@ export default function RootLayout({
         </head>
         <body className="min-h-full flex flex-col">
           <TooltipProvider>
-          <AuthModalProvider>
-            <NextTopLoader
-              color="#C2410C"
-              initialPosition={0.08}
-              crawlSpeed={200}
-              height={3}
-              crawl={true}
-              showSpinner={false}
-              easing="ease"
-              speed={200}
-              shadow="0 0 10px #C2410C,0 0 5px #C2410C"
-            />
-            <ThemeSync />
-            {children}
-            <AuthModal />
-            <Toaster 
-              position="top-center" 
-              richColors 
-              toastOptions={{
-                style: {
-                  background: 'var(--surface-container-lowest)',
-                  color: 'var(--on-surface)',
-                  border: '1px solid var(--outline-variant)',
-                  borderRadius: '1.25rem',
-                  fontFamily: 'var(--font-display)',
-                },
-              }}
-            />
-            <ScrollToTop />
-          </AuthModalProvider>
+            <AuthModalProvider>
+              <NextTopLoader
+                color="#C2410C"
+                initialPosition={0.08}
+                crawlSpeed={200}
+                height={3}
+                crawl={true}
+                showSpinner={false}
+                easing="ease"
+                speed={200}
+                shadow="0 0 10px #C2410C,0 0 5px #C2410C"
+              />
+              <ThemeSync />
+              {children}
+              <AuthModal />
+              <Toaster
+                position="top-center"
+                richColors
+                toastOptions={{
+                  style: {
+                    background: "var(--surface-container-lowest)",
+                    color: "var(--on-surface)",
+                    border: "1px solid var(--outline-variant)",
+                    borderRadius: "1.25rem",
+                    fontFamily: "var(--font-display)",
+                  },
+                }}
+              />
+              <ScrollToTop />
+            </AuthModalProvider>
           </TooltipProvider>
         </body>
       </html>
-    </ClerkProvider>
+    </>
   );
 }

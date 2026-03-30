@@ -68,17 +68,10 @@ export function PaymentRowActions({
   const handleMarkAsPaid = () => {
     startTransition(async () => {
       try {
-        // Optimistic Update
+        // Use action promise as mutate second arg and provide optimisticData
         await globalMutate(
           "/api/dashboard/payments",
-          async (current: any[] | undefined) => {
-            if (!current) return [];
-            return current.map((p) =>
-              p.id === paymentId
-                ? { ...p, status: "paid", paidAt: new Date().toISOString() }
-                : p,
-            );
-          },
+          markPaymentAsPaid(paymentId),
           {
             optimisticData: (current: any[] | undefined) => {
               if (!current) return [];
@@ -90,10 +83,9 @@ export function PaymentRowActions({
             },
             rollbackOnError: true,
             revalidate: true,
+            populateCache: false,
           },
         );
-
-        await markPaymentAsPaid(paymentId);
         toast.success("Pembayaran berhasil ditandai lunas");
         await globalMutate("/api/dashboard/stats");
       } catch (err: any) {
@@ -105,13 +97,10 @@ export function PaymentRowActions({
   const handleDelete = () => {
     startTransition(async () => {
       try {
-        // Optimistic Update
+        // Use action promise as mutate second arg and provide optimisticData
         await globalMutate(
           "/api/dashboard/payments",
-          async (current: any[] | undefined) => {
-            if (!current) return [];
-            return current.filter((p) => p.id !== paymentId);
-          },
+          deletePayment(paymentId),
           {
             optimisticData: (current: any[] | undefined) => {
               if (!current) return [];
@@ -119,10 +108,9 @@ export function PaymentRowActions({
             },
             rollbackOnError: true,
             revalidate: true,
+            populateCache: false,
           },
         );
-
-        await deletePayment(paymentId);
         toast.success("Pembayaran berhasil dihapus");
         setShowConfirmDelete(false);
         await globalMutate("/api/dashboard/stats");

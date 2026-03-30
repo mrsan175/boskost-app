@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/db";
 import { properties, activityLogs, users } from "@/lib/db/schema";
-import { currentUser } from "@clerk/nextjs/server";
+import { currentUser } from "@/lib/serverAuth";
 import { eq, and, count } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -30,14 +30,16 @@ export async function createProperty(formData: FormData) {
 
     if (propCount.value >= 1) {
       throw new Error(
-        "Batas Properti Tercapai: Akun FREE hanya dapat memiliki maksimal 1 properti. Silakan upgrade ke PRO untuk menambah lebih banyak."
+        "Batas Properti Tercapai: Akun FREE hanya dapat memiliki maksimal 1 properti. Silakan upgrade ke PRO untuk menambah lebih banyak.",
       );
     }
   }
 
   const id = crypto.randomUUID();
 
-  await db.insert(properties).values({ id, ownerId: user.id, name, address, city });
+  await db
+    .insert(properties)
+    .values({ id, ownerId: user.id, name, address, city });
 
   await db.insert(activityLogs).values({
     id: crypto.randomUUID(),

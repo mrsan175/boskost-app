@@ -1,4 +1,4 @@
-import { currentUser } from "@clerk/nextjs/server";
+import { currentUser } from "@/lib/serverAuth";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { properties, rooms, users } from "@/lib/db/schema";
@@ -16,7 +16,7 @@ export default async function PropertiesPage() {
       address: properties.address,
       city: properties.city,
       isActive: properties.isActive,
-      createdAt: properties.createdAt
+      createdAt: properties.createdAt,
     })
     .from(properties)
     .where(eq(properties.ownerId, user.id))
@@ -33,10 +33,20 @@ export default async function PropertiesPage() {
       const total = roomRows.length;
       const occupied = roomRows.filter((r) => r.status === "occupied").length;
       const available = roomRows.filter((r) => r.status === "available").length;
-      const maintenance = roomRows.filter((r) => r.status === "maintenance").length;
-      const occupancyRate = total > 0 ? Math.round((occupied / total) * 100) : 0;
-      return { ...prop, total, occupied, available, maintenance, occupancyRate };
-    })
+      const maintenance = roomRows.filter(
+        (r) => r.status === "maintenance",
+      ).length;
+      const occupancyRate =
+        total > 0 ? Math.round((occupied / total) * 100) : 0;
+      return {
+        ...prop,
+        total,
+        occupied,
+        available,
+        maintenance,
+        occupancyRate,
+      };
+    }),
   );
 
   // Subscription verification
@@ -48,9 +58,6 @@ export default async function PropertiesPage() {
   const isFree = !userData || userData.subscriptionTier === "FREE";
 
   return (
-    <PropertiesView 
-      initialProperties={initialProperties} 
-      isFree={isFree} 
-    />
+    <PropertiesView initialProperties={initialProperties} isFree={isFree} />
   );
 }

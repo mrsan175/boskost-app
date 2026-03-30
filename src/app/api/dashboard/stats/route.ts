@@ -1,12 +1,20 @@
 import { db } from "@/lib/db";
-import { rooms, properties, tenants, payments, roomTenants, users } from "@/lib/db/schema";
+import {
+  rooms,
+  properties,
+  tenants,
+  payments,
+  roomTenants,
+  users,
+} from "@/lib/db/schema";
 import { eq, count, and, gte, lt } from "drizzle-orm";
-import { currentUser } from "@clerk/nextjs/server";
+import { currentUser } from "@/lib/serverAuth";
 import { NextResponse } from "next/server";
 
 export async function GET() {
   const user = await currentUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!user)
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const now = new Date();
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -36,7 +44,8 @@ export async function GET() {
 
   const totalRooms = allRooms.length;
   const occupiedRooms = allRooms.filter((r) => r.status === "occupied").length;
-  const occupancyRate = totalRooms > 0 ? Math.round((occupiedRooms / totalRooms) * 100) : 0;
+  const occupancyRate =
+    totalRooms > 0 ? Math.round((occupiedRooms / totalRooms) * 100) : 0;
 
   const revenueRows = await db
     .select({ amount: payments.amount })
@@ -50,10 +59,13 @@ export async function GET() {
         eq(payments.status, "paid"),
         gte(payments.paidAt, startOfMonth),
         eq(rooms.isActive, true),
-      )
+      ),
     );
 
-  const totalRevenue = revenueRows.reduce((sum, r) => sum + parseFloat(r.amount || "0"), 0);
+  const totalRevenue = revenueRows.reduce(
+    (sum, r) => sum + parseFloat(r.amount || "0"),
+    0,
+  );
 
   const lastMonthRows = await db
     .select({ amount: payments.amount })
@@ -68,15 +80,19 @@ export async function GET() {
         gte(payments.paidAt, startOfLastMonth),
         lt(payments.paidAt, startOfMonth),
         eq(rooms.isActive, true),
-      )
+      ),
     );
-  const lastMonthRevenue = lastMonthRows.reduce((s, r) => s + parseFloat(r.amount || "0"), 0);
+  const lastMonthRevenue = lastMonthRows.reduce(
+    (s, r) => s + parseFloat(r.amount || "0"),
+    0,
+  );
   const revenueGrowth =
     lastMonthRevenue > 0
       ? Math.round(((totalRevenue - lastMonthRevenue) / lastMonthRevenue) * 100)
       : null;
 
-  const verifiedPct = totalTenants > 0 ? Math.round((verifiedTenants / totalTenants) * 100) : 0;
+  const verifiedPct =
+    totalTenants > 0 ? Math.round((verifiedTenants / totalTenants) * 100) : 0;
 
   return NextResponse.json({
     totalProperties,

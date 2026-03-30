@@ -1,4 +1,4 @@
-import { currentUser } from "@clerk/nextjs/server";
+import { currentUser } from "@/lib/serverAuth";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { rooms, properties, roomTenants, tenants } from "@/lib/db/schema";
@@ -33,15 +33,13 @@ export default async function RoomsPage() {
     })
     .from(rooms)
     .innerJoin(properties, eq(rooms.propertyId, properties.id))
-    .leftJoin(roomTenants, and(eq(rooms.id, roomTenants.roomId), eq(roomTenants.isActive, true)))
+    .leftJoin(
+      roomTenants,
+      and(eq(rooms.id, roomTenants.roomId), eq(roomTenants.isActive, true)),
+    )
     .leftJoin(tenants, eq(roomTenants.tenantId, tenants.id))
     .where(and(eq(properties.ownerId, user.id), eq(properties.isActive, true)))
     .orderBy(properties.name, rooms.floor, rooms.roomNumber);
 
-  return (
-    <RoomsView 
-      initialRooms={initialRooms} 
-      propertyList={propertyList} 
-    />
-  );
+  return <RoomsView initialRooms={initialRooms} propertyList={propertyList} />;
 }

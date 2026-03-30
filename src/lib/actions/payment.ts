@@ -9,7 +9,7 @@ import {
   properties,
   activityLogs,
 } from "@/lib/db/schema";
-import { currentUser } from "@clerk/nextjs/server";
+import { currentUser } from "@/lib/serverAuth";
 import { eq, and, desc, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 

@@ -48,6 +48,10 @@ export const users = pgTable("users", {
   id: varchar("id", { length: 255 }).primaryKey(),
   username: varchar("username", { length: 255 }).unique(),
   email: varchar("email", { length: 255 }).notNull().unique(),
+  // hashed password for local auth (bcrypt)
+  passwordHash: text("password_hash"),
+  // whether the user has verified their email address
+  isEmailVerified: boolean("is_email_verified").default(false).notNull(),
   name: text("name"),
   imageUrl: text("image_url"),
   subscriptionTier: subscriptionTierEnum("subscription_tier")
@@ -55,6 +59,20 @@ export const users = pgTable("users", {
     .notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// ─── Refresh Tokens (for refresh token rotation) ─────────────────────────────
+
+export const refreshTokens = pgTable("refresh_tokens", {
+  id: varchar("id", { length: 255 }).primaryKey(),
+  userId: varchar("user_id", { length: 255 })
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  // store a hashed version of the refresh token
+  tokenHash: text("token_hash").notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  revoked: boolean("revoked").default(false).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 // ─── Properties ────────────────────────────────────────────────────────────────
@@ -171,6 +189,8 @@ export const insertPaymentSchema = createInsertSchema(payments);
 export const selectPaymentSchema = createSelectSchema(payments);
 export const insertActivityLogSchema = createInsertSchema(activityLogs);
 export const selectActivityLogSchema = createSelectSchema(activityLogs);
+export const insertRefreshTokenSchema = createInsertSchema(refreshTokens);
+export const selectRefreshTokenSchema = createSelectSchema(refreshTokens);
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
@@ -188,3 +208,5 @@ export type Payment = z.infer<typeof selectPaymentSchema>;
 export type NewPayment = z.infer<typeof insertPaymentSchema>;
 export type ActivityLog = z.infer<typeof selectActivityLogSchema>;
 export type NewActivityLog = z.infer<typeof insertActivityLogSchema>;
+export type RefreshToken = z.infer<typeof selectRefreshTokenSchema>;
+export type NewRefreshToken = z.infer<typeof insertRefreshTokenSchema>;

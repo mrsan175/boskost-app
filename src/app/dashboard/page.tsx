@@ -1,4 +1,4 @@
-import { currentUser } from "@clerk/nextjs/server";
+import { currentUser } from "@/lib/serverAuth";
 import { redirect } from "next/navigation";
 import DashboardSidebar from "@/components/dashboard/Sidebar";
 import DashboardTopbar from "@/components/dashboard/DashboardTopbar";
@@ -16,57 +16,60 @@ import { users } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 
 export default async function DashboardPage() {
-    const user = await currentUser();
-    if (!user) redirect("/");
+  const user = await currentUser();
+  if (!user) redirect("/");
 
-    const firstName = user.firstName || "User";
-    const fullName = [user.firstName, user.lastName].filter(Boolean).join(" ");
+  const name = user.name || "User";
 
-    const [userData] = await db
-        .select({ subscriptionTier: users.subscriptionTier })
-        .from(users)
-        .where(eq(users.id, user.id));
+  const [userData] = await db
+    .select({ subscriptionTier: users.subscriptionTier })
+    .from(users)
+    .where(eq(users.id, user.id));
 
-    const isFree = !userData || userData.subscriptionTier === "FREE";
+  const isFree = !userData || userData.subscriptionTier === "FREE";
 
-    return (
-        <div style={{ background: "transparent" }}>
-            {/* Welcome Header */}
-            <header className="mb-8 lg:mb-10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-                <div>
-                    <h2
-                        className="text-3xl font-extrabold tracking-tight"
-                        style={{ color: "var(--on-surface)", fontFamily: "var(--font-display)" }}
-                    >
-                        Selamat datang, {firstName}!
-                    </h2>
-                    <p className="mt-1 text-sm" style={{ color: "var(--on-surface-variant)" }}>
-                        Berikut adalah informasi properti Anda hari ini.
-                    </p>
-                </div>
-            </header>
-
-            {/* ── Stat Cards ── */}
-            <StatCards />
-
-            {/* ── Dashboard Content Grid ── */}
-            <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-
-                {/* Left: Main Metrics (2/3 width) */}
-                <section className="space-y-8 lg:col-span-2">
-                    <RevenueOverview />
-                    <RoomOverview />
-                    <PropertyPerformance />
-                </section>
-
-                {/* Right: Sidebar Activity (1/3 width) */}
-                <aside>
-                    <ActivityFeed />
-                </aside>
-
-            </div>
-
-            <div className="h-12" />
+  return (
+    <div style={{ background: "transparent" }}>
+      {/* Welcome Header */}
+      <header className="mb-8 lg:mb-10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+        <div>
+          <h2
+            className="text-3xl font-extrabold tracking-tight"
+            style={{
+              color: "var(--on-surface)",
+              fontFamily: "var(--font-display)",
+            }}
+          >
+            Selamat datang, {name}!
+          </h2>
+          <p
+            className="mt-1 text-sm"
+            style={{ color: "var(--on-surface-variant)" }}
+          >
+            Berikut adalah informasi properti Anda hari ini.
+          </p>
         </div>
-    );
+      </header>
+
+      {/* ── Stat Cards ── */}
+      <StatCards />
+
+      {/* ── Dashboard Content Grid ── */}
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+        {/* Left: Main Metrics (2/3 width) */}
+        <section className="space-y-8 lg:col-span-2">
+          <RevenueOverview />
+          <RoomOverview />
+          <PropertyPerformance />
+        </section>
+
+        {/* Right: Sidebar Activity (1/3 width) */}
+        <aside>
+          <ActivityFeed />
+        </aside>
+      </div>
+
+      <div className="h-12" />
+    </div>
+  );
 }

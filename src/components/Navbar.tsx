@@ -4,7 +4,7 @@ import Link from "next/link";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Menu01Icon, Cancel01Icon } from "@hugeicons/core-free-icons";
 import { ThemeSwitcher } from "@/components/theme-switcher";
-import { Show, UserButton } from "@clerk/nextjs";
+import useAuth from "@/hooks/useAuth";
 import { useAuthModal } from "@/contexts/auth-modal-context";
 
 const navLinks = [
@@ -16,6 +16,7 @@ const navLinks = [
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const { openSignIn, openSignUp } = useAuthModal();
+  const { user } = useAuth();
 
   return (
     <header
@@ -67,32 +68,37 @@ export default function Navbar() {
 
           {/* CTA group — desktop */}
           <div className="hidden items-center gap-3 md:flex">
-            <Show when="signed-out">
-              <button
-                onClick={openSignIn}
-                className="text-sm font-semibold transition-colors cursor-pointer"
-                style={{ color: "var(--on-surface-variant)" }}
-              >
-                Masuk
-              </button>
-              <button
-                onClick={openSignUp}
-                className="rounded-full px-5 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:-translate-y-0.5 cursor-pointer"
-                style={{ background: "var(--gradient-cta)" }}
-              >
-                Daftar
-              </button>
-            </Show>
-            <Show when="signed-in">
-              <Link
-                href="/dashboard"
-                className="text-sm font-semibold transition-colors"
-                style={{ color: "var(--on-surface-variant)" }}
-              >
-                Dashboard
-              </Link>
-              <UserButton />
-            </Show>
+            {!user ? (
+              <>
+                <button
+                  onClick={openSignIn}
+                  className="text-sm font-semibold transition-colors cursor-pointer"
+                  style={{ color: "var(--on-surface-variant)" }}
+                >
+                  Masuk
+                </button>
+                <button
+                  onClick={openSignUp}
+                  className="rounded-full px-5 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:-translate-y-0.5 cursor-pointer"
+                  style={{ background: "var(--gradient-cta)" }}
+                >
+                  Daftar
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/dashboard"
+                  className="text-sm font-semibold transition-colors"
+                  style={{ color: "var(--on-surface-variant)" }}
+                >
+                  Dashboard
+                </Link>
+                <Link href="/profile" className="ml-2 text-sm">
+                  {user.name ?? user.email}
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile menu toggle */}
@@ -134,36 +140,44 @@ export default function Navbar() {
             ))}
           </ul>
           <div className="mt-5 flex flex-col gap-3">
-            <Show when="signed-out">
-              <button
-                onClick={() => { openSignIn(); setOpen(false); }}
-                className="text-center text-sm font-semibold"
-                style={{ color: "var(--on-surface)" }}
-              >
-                Masuk
-              </button>
-              <button
-                onClick={() => { openSignUp(); setOpen(false); }}
-                className="rounded-full px-5 py-2.5 text-center text-sm font-semibold text-white"
-                style={{ background: "var(--gradient-cta)" }}
-              >
-                Daftar
-              </button>
-            </Show>
-            <div className="flex justify-center mt-2">
-              <UserButton />
-            </div>
-            <Show when="signed-in">
-              <Link
-                href="/dashboard"
-                className="text-center text-sm font-semibold"
-                style={{ color: "var(--on-surface)" }}
-                onClick={() => setOpen(false)}
-              >
-                Dashboard
-              </Link>
-
-            </Show>
+            {!user ? (
+              <>
+                <button
+                  onClick={() => {
+                    openSignIn();
+                    setOpen(false);
+                  }}
+                  className="text-center text-sm font-semibold"
+                  style={{ color: "var(--on-surface)" }}
+                >
+                  Masuk
+                </button>
+                <button
+                  onClick={() => {
+                    openSignUp();
+                    setOpen(false);
+                  }}
+                  className="rounded-full px-5 py-2.5 text-center text-sm font-semibold text-white"
+                  style={{ background: "var(--gradient-cta)" }}
+                >
+                  Daftar
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/dashboard"
+                  className="text-center text-sm font-semibold"
+                  style={{ color: "var(--on-surface)" }}
+                  onClick={() => setOpen(false)}
+                >
+                  Dashboard
+                </Link>
+                <div className="flex justify-center mt-2">
+                  {user.name ?? user.email}
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}

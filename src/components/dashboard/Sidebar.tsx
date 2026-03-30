@@ -32,17 +32,29 @@ export function SidebarContent({ isFree = true }: { isFree?: boolean }) {
       <div className="mb-6 px-3">
         <div>
           <Link href="/" className="flex items-center gap-2">
-            <p className="text-xl font-bold leading-tight" style={{ color: "var(--primary)", fontFamily: "var(--font-display)" }}>
+            <p
+              className="text-xl font-bold leading-tight"
+              style={{
+                color: "var(--primary)",
+                fontFamily: "var(--font-display)",
+              }}
+            >
               Boskost
             </p>
           </Link>
-          <p className="text-[9px] uppercase tracking-widest font-bold leading-tight" style={{ color: "var(--on-surface-variant)" }}>
-            Modern Estate Management
+          <p
+            className="text-[9px] uppercase tracking-widest font-bold leading-tight"
+            style={{ color: "var(--on-surface-variant)" }}
+          >
+            Manajamen Kost Modern
           </p>
         </div>
       </div>
 
-      <Separator className="mb-3" style={{ background: "var(--outline-variant)" }} />
+      <Separator
+        className="mb-3"
+        style={{ background: "var(--outline-variant)" }}
+      />
 
       {/* Nav */}
       <nav className="flex-1 flex flex-col gap-0.5 px-1">
@@ -57,10 +69,14 @@ export function SidebarContent({ isFree = true }: { isFree?: boolean }) {
                 variant="ghost"
                 className="w-full justify-start gap-3 rounded-xl px-3 py-2.5 h-auto text-sm transition-all duration-200"
                 style={{
-                  color: active ? "var(--primary)" : "var(--on-surface-variant)",
+                  color: active
+                    ? "var(--primary)"
+                    : "var(--on-surface-variant)",
                   fontWeight: active ? 700 : 500,
                   background: active ? "rgba(194,65,12,0.10)" : "transparent",
-                  borderRight: active ? "3px solid var(--primary)" : "3px solid transparent",
+                  borderRight: active
+                    ? "3px solid var(--primary)"
+                    : "3px solid transparent",
                   fontFamily: "var(--font-body)",
                 }}
               >
@@ -72,7 +88,10 @@ export function SidebarContent({ isFree = true }: { isFree?: boolean }) {
         })}
       </nav>
 
-      <Separator className="my-3" style={{ background: "var(--outline-variant)" }} />
+      <Separator
+        className="my-3"
+        style={{ background: "var(--outline-variant)" }}
+      />
 
       {/* Upgrade Card */}
       {isFree && (
@@ -85,12 +104,27 @@ export function SidebarContent({ isFree = true }: { isFree?: boolean }) {
             }}
           >
             <div className="flex items-center justify-between">
-              <p className="text-xs font-bold" style={{ color: "var(--primary)" }}>Subscription</p>
-              <Badge variant="outline" className="text-[9px] px-1.5 h-4" style={{ color: "var(--primary)", borderColor: "var(--primary)" }}>
+              <p
+                className="text-xs font-bold"
+                style={{ color: "var(--primary)" }}
+              >
+                Subscription
+              </p>
+              <Badge
+                variant="outline"
+                className="text-[9px] px-1.5 h-4"
+                style={{
+                  color: "var(--primary)",
+                  borderColor: "var(--primary)",
+                }}
+              >
                 FREE
               </Badge>
             </div>
-            <p className="text-[11px] leading-relaxed" style={{ color: "var(--on-surface-variant)" }}>
+            <p
+              className="text-[11px] leading-relaxed"
+              style={{ color: "var(--on-surface-variant)" }}
+            >
               Upgrade to unlock PRO features.
             </p>
             <Button
@@ -106,7 +140,11 @@ export function SidebarContent({ isFree = true }: { isFree?: boolean }) {
   );
 }
 
-export default function DashboardSidebar({ isFree = true }: { isFree?: boolean }) {
+export default function DashboardSidebar({
+  isFree = true,
+}: {
+  isFree?: boolean;
+}) {
   return (
     <aside
       className="hidden lg:flex fixed left-0 top-0 h-screen w-64 z-50 flex-col"

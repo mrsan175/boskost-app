@@ -1,8 +1,14 @@
-import { currentUser } from "@clerk/nextjs/server";
+import { currentUser } from "@/lib/serverAuth";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { db } from "@/lib/db";
-import { properties, rooms, roomTenants, tenants, users } from "@/lib/db/schema";
+import {
+  properties,
+  rooms,
+  roomTenants,
+  tenants,
+  users,
+} from "@/lib/db/schema";
 import { eq, and, count } from "drizzle-orm";
 import { AddRoomDialog } from "@/components/dashboard/AddRoomDialog";
 import { PropertyCardActions } from "@/components/dashboard/PropertyCardActions";
@@ -18,10 +24,21 @@ import {
 
 type RoomStatus = "available" | "occupied" | "maintenance";
 
-const statusConfig: Record<RoomStatus, { label: string; color: string; bg: string }> = {
-  available: { label: "Tersedia", color: "#22c55e", bg: "rgba(34,197,94,0.12)" },
+const statusConfig: Record<
+  RoomStatus,
+  { label: string; color: string; bg: string }
+> = {
+  available: {
+    label: "Tersedia",
+    color: "#22c55e",
+    bg: "rgba(34,197,94,0.12)",
+  },
   occupied: { label: "Terisi", color: "#C2410C", bg: "rgba(194,65,12,0.10)" },
-  maintenance: { label: "Perbaikan", color: "#f97316", bg: "rgba(249,115,22,0.10)" },
+  maintenance: {
+    label: "Perbaikan",
+    color: "#f97316",
+    bg: "rgba(249,115,22,0.10)",
+  },
 };
 
 export default async function PropertyDetailPage({
@@ -32,8 +49,6 @@ export default async function PropertyDetailPage({
   const { id } = await params;
   const user = await currentUser();
   if (!user) redirect("/");
-
-  const fullName = [user.firstName, user.lastName].filter(Boolean).join(" ");
 
   // Verify property belongs to user
   const [prop] = await db
@@ -64,7 +79,7 @@ export default async function PropertyDetailPage({
 
   // Map leases by roomId for easy lookup
   const leaseByRoom = Object.fromEntries(
-    activeLeases.map((l) => [l.roomId, l])
+    activeLeases.map((l) => [l.roomId, l]),
   );
 
   // Subscription check & limits
@@ -91,7 +106,9 @@ export default async function PropertyDetailPage({
   const occupancyRate = total > 0 ? Math.round((occupied / total) * 100) : 0;
 
   // Group by floor
-  const floors = Array.from(new Set(roomList.map((r) => r.floor ?? 1))).sort((a, b) => a - b);
+  const floors = Array.from(new Set(roomList.map((r) => r.floor ?? 1))).sort(
+    (a, b) => a - b,
+  );
 
   return (
     <div className="space-y-8">
@@ -117,12 +134,18 @@ export default async function PropertyDetailPage({
             <div>
               <h2
                 className="text-3xl font-extrabold tracking-tight"
-                style={{ color: "var(--on-surface)", fontFamily: "var(--font-display)" }}
+                style={{
+                  color: "var(--on-surface)",
+                  fontFamily: "var(--font-display)",
+                }}
               >
                 {prop.name}
               </h2>
               {(prop.city || prop.address) && (
-                <p className="mt-1 flex items-center gap-1 text-sm" style={{ color: "var(--on-surface-variant)" }}>
+                <p
+                  className="mt-1 flex items-center gap-1 text-sm"
+                  style={{ color: "var(--on-surface-variant)" }}
+                >
                   <HugeiconsIcon icon={Location01Icon} size={14} />
                   {[prop.city, prop.address].filter(Boolean).join(" • ")}
                 </p>
@@ -155,10 +178,18 @@ export default async function PropertyDetailPage({
           <div
             key={s.label}
             className="rounded-3xl p-4 transition-all border"
-            style={{ background: "var(--surface-container-low)", borderColor: "var(--outline-variant)" }}
+            style={{
+              background: "var(--surface-container-low)",
+              borderColor: "var(--outline-variant)",
+            }}
           >
-            <p className="text-[10px] font-bold uppercase tracking-widest opacity-60 mb-1">{s.label}</p>
-            <p className="text-2xl font-black" style={{ color: s.color, fontFamily: "var(--font-display)" }}>
+            <p className="text-[10px] font-bold uppercase tracking-widest opacity-60 mb-1">
+              {s.label}
+            </p>
+            <p
+              className="text-2xl font-black"
+              style={{ color: s.color, fontFamily: "var(--font-display)" }}
+            >
               {s.value}
             </p>
           </div>
@@ -167,31 +198,59 @@ export default async function PropertyDetailPage({
 
       {/* Occupancy bar */}
       {total > 0 && (
-        <div className="p-6 rounded-3xl border" style={{ background: "var(--surface-container-low)", borderColor: "var(--outline-variant)" }}>
+        <div
+          className="p-6 rounded-3xl border"
+          style={{
+            background: "var(--surface-container-low)",
+            borderColor: "var(--outline-variant)",
+          }}
+        >
           <div className="mb-2 flex items-center justify-between text-xs font-bold">
-            <span style={{ color: "var(--on-surface-variant)" }}>Tingkat Hunian</span>
+            <span style={{ color: "var(--on-surface-variant)" }}>
+              Tingkat Hunian
+            </span>
             <span style={{ color: "var(--primary)" }}>{occupancyRate}%</span>
           </div>
           <div className="flex h-3 w-full overflow-hidden rounded-full gap-0.5 bg-outline-variant/20">
             {occupied > 0 && (
-              <div style={{ width: `${(occupied / total) * 100}%`, background: "#C2410C" }} />
+              <div
+                style={{
+                  width: `${(occupied / total) * 100}%`,
+                  background: "#C2410C",
+                }}
+              />
             )}
             {available > 0 && (
-              <div style={{ width: `${(available / total) * 100}%`, background: "#22c55e" }} />
+              <div
+                style={{
+                  width: `${(available / total) * 100}%`,
+                  background: "#22c55e",
+                }}
+              />
             )}
             {maintenance > 0 && (
-              <div style={{ width: `${(maintenance / total) * 100}%`, background: "#f97316" }} />
+              <div
+                style={{
+                  width: `${(maintenance / total) * 100}%`,
+                  background: "#f97316",
+                }}
+              />
             )}
           </div>
           <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2">
-            {(["occupied", "available", "maintenance"] as RoomStatus[]).map((s) => (
-              <div key={s} className="flex items-center gap-2">
-                <div className="h-2 w-2 rounded-full" style={{ background: statusConfig[s].color }} />
-                <span className="text-[10px] font-bold uppercase tracking-wider opacity-60">
-                  {statusConfig[s].label}
-                </span>
-              </div>
-            ))}
+            {(["occupied", "available", "maintenance"] as RoomStatus[]).map(
+              (s) => (
+                <div key={s} className="flex items-center gap-2">
+                  <div
+                    className="h-2 w-2 rounded-full"
+                    style={{ background: statusConfig[s].color }}
+                  />
+                  <span className="text-[10px] font-bold uppercase tracking-wider opacity-60">
+                    {statusConfig[s].label}
+                  </span>
+                </div>
+              ),
+            )}
           </div>
         </div>
       )}
@@ -199,10 +258,12 @@ export default async function PropertyDetailPage({
       {/* Room Grid by Floor */}
       {total === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 gap-4 text-center">
-          <div
-            className="flex h-16 w-16 items-center justify-center rounded-3xl bg-surface-container-highest"
-          >
-            <HugeiconsIcon icon={BedIcon} size={32} style={{ color: "var(--primary)", opacity: 0.4 }} />
+          <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-surface-container-highest">
+            <HugeiconsIcon
+              icon={BedIcon}
+              size={32}
+              style={{ color: "var(--primary)", opacity: 0.4 }}
+            />
           </div>
           <p className="text-lg font-bold">Belum ada kamar</p>
           <p className="text-sm opacity-60">
@@ -216,15 +277,24 @@ export default async function PropertyDetailPage({
             return (
               <div key={floor} className="space-y-4">
                 <div className="flex items-center gap-2">
-                  <div className="h-4 w-1 rounded-full" style={{ background: "var(--primary)" }} />
-                  <h3 className="font-bold text-sm tracking-tight" style={{ fontFamily: "var(--font-display)" }}>
+                  <div
+                    className="h-4 w-1 rounded-full"
+                    style={{ background: "var(--primary)" }}
+                  />
+                  <h3
+                    className="font-bold text-sm tracking-tight"
+                    style={{ fontFamily: "var(--font-display)" }}
+                  >
                     Lantai {floor}
                   </h3>
-                  <Badge variant="outline" className="text-[9px] font-bold border-outline-variant opacity-60">
+                  <Badge
+                    variant="outline"
+                    className="text-[9px] font-bold border-outline-variant opacity-60"
+                  >
                     {floorRooms.length} KAMAR
                   </Badge>
                 </div>
-                
+
                 <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10">
                   {floorRooms.map((room) => {
                     const lease = leaseByRoom[room.id];

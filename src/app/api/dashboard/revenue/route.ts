@@ -1,14 +1,28 @@
 import { db } from "@/lib/db";
 import { payments, roomTenants, rooms, properties } from "@/lib/db/schema";
 import { eq, and, gte, lt } from "drizzle-orm";
-import { currentUser } from "@clerk/nextjs/server";
+import { currentUser } from "@/lib/serverAuth";
 import { NextResponse } from "next/server";
 
-const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+const MONTH_NAMES = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "Mei",
+  "Jun",
+  "Jul",
+  "Agu",
+  "Sep",
+  "Okt",
+  "Nov",
+  "Des",
+];
 
 export async function GET() {
   const user = await currentUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!user)
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const now = new Date();
 
@@ -36,10 +50,10 @@ export async function GET() {
             eq(payments.status, "paid"),
             gte(payments.paidAt, start),
             lt(payments.paidAt, end),
-          )
+          ),
         );
       return rows.reduce((s, r) => s + parseFloat(r.amount || "0"), 0);
-    })
+    }),
   );
 
   return NextResponse.json({

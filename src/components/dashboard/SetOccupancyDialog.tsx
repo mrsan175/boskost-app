@@ -4,7 +4,12 @@ import { useState, useTransition, useEffect } from "react";
 import { setRoomOccupied } from "@/lib/actions/room";
 import { toast } from "sonner";
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,7 +18,12 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { User02Icon, Calendar01Icon } from "@hugeicons/core-free-icons";
 import { mutate as globalMutate } from "swr";
 
-import { LeaseDurationSelector, LEASE_PRESETS as PRESETS, addDuration, type DurationPreset } from "@/components/dashboard/LeaseDurationSelector";
+import {
+  LeaseDurationSelector,
+  LEASE_PRESETS as PRESETS,
+  addDuration,
+  type DurationPreset,
+} from "@/components/dashboard/LeaseDurationSelector";
 
 function calcDurationLabel(start: string, end: string): string | null {
   if (!start || !end) return null;
@@ -127,12 +137,12 @@ export function SetOccupancyDialog({
               if (!current) return [];
               return current.map((r) => {
                 if (r.id === roomId) {
-                   return { 
-                    ...r, 
-                    status: "occupied", 
+                  return {
+                    ...r,
+                    status: "occupied",
                     tenantName: tenantName,
                     startDate: startDate,
-                    endDate: endDate || null
+                    endDate: endDate || null,
                   };
                 }
                 return r;
@@ -141,13 +151,15 @@ export function SetOccupancyDialog({
             rollbackOnError: true,
             revalidate: true,
             populateCache: false, // Don't use server action result as the rooms list
-          }
+          },
         );
 
         toast.success("Penyewa berhasil ditetapkan ke kamar");
         globalMutate("/api/dashboard/stats");
       } catch (err) {
-        toast.error(err instanceof Error ? err.message : "Gagal menetapkan penyewa");
+        toast.error(
+          err instanceof Error ? err.message : "Gagal menetapkan penyewa",
+        );
       }
     });
   }
@@ -155,7 +167,13 @@ export function SetOccupancyDialog({
   const durationLabel = calcDurationLabel(startDate, endDate);
 
   return (
-    <Dialog open={open} onOpenChange={(v) => { onOpenChange(v); if (!v) handleReset(); }}>
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        onOpenChange(v);
+        if (!v) handleReset();
+      }}
+    >
       <DialogContent className="sm:max-w-lg rounded-3xl max-h-[90vh] h-[640px] flex flex-col p-0 overflow-hidden">
         <DialogHeader className="p-6 pb-2 shrink-0">
           <div className="flex items-center gap-3 mb-1">
@@ -166,20 +184,32 @@ export function SetOccupancyDialog({
               <HugeiconsIcon icon={User02Icon} size={20} />
             </div>
             <div>
-              <DialogTitle className="text-xl" style={{ fontFamily: "var(--font-display)" }}>
-                {initialData?.tenantName ? "Ubah Data Sewa" : "Tetapkan Penyewa"}
+              <DialogTitle
+                className="text-xl"
+                style={{ fontFamily: "var(--font-display)" }}
+              >
+                {initialData?.tenantName
+                  ? "Ubah Data Sewa"
+                  : "Tambahkan Penyewa"}
               </DialogTitle>
-              <p className="text-xs" style={{ color: "var(--on-surface-variant)" }}>
+              <p
+                className="text-xs"
+                style={{ color: "var(--on-surface-variant)" }}
+              >
                 Kamar {roomNumber}
               </p>
             </div>
           </div>
           <DialogDescription>
-            Isi nama penyewa dan pilih durasi sewa, atau atur tanggal secara manual.
+            Isi nama penyewa dan pilih durasi sewa, atau atur tanggal secara
+            manual.
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="flex flex-col h-full overflow-hidden">
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col h-full overflow-hidden"
+        >
           <div className="flex-1 overflow-y-auto px-6 space-y-5">
             {/* Tenant name */}
             <div className="space-y-1.5">
@@ -236,18 +266,39 @@ export function SetOccupancyDialog({
             {durationLabel && (
               <div
                 className="flex items-center justify-between rounded-2xl px-4 py-3"
-                style={{ background: "rgba(194,65,12,0.06)", border: "1px solid rgba(194,65,12,0.2)" }}
+                style={{
+                  background: "rgba(194,65,12,0.06)",
+                  border: "1px solid rgba(194,65,12,0.2)",
+                }}
               >
                 <div className="flex items-center gap-2">
-                  <HugeiconsIcon icon={Calendar01Icon} size={16} style={{ color: "var(--primary)" }} />
+                  <HugeiconsIcon
+                    icon={Calendar01Icon}
+                    size={16}
+                    style={{ color: "var(--primary)" }}
+                  />
                   <div>
-                    <p className="text-xs font-bold" style={{ color: "var(--primary)" }}>
+                    <p
+                      className="text-xs font-bold"
+                      style={{ color: "var(--primary)" }}
+                    >
                       Durasi Sewa: {durationLabel}
                     </p>
-                    <p className="text-[10px]" style={{ color: "var(--on-surface-variant)" }}>
-                      {new Date(startDate).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
+                    <p
+                      className="text-[10px]"
+                      style={{ color: "var(--on-surface-variant)" }}
+                    >
+                      {new Date(startDate).toLocaleDateString("id-ID", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      })}
                       {" → "}
-                      {new Date(endDate).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
+                      {new Date(endDate).toLocaleDateString("id-ID", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      })}
                     </p>
                   </div>
                 </div>
@@ -264,8 +315,12 @@ export function SetOccupancyDialog({
 
             {/* No end date note */}
             {!endDate && (
-              <p className="text-[10px]" style={{ color: "var(--on-surface-variant)" }}>
-                💡 Tidak memilih tanggal berakhir artinya sewa tanpa batas waktu.
+              <p
+                className="text-[10px]"
+                style={{ color: "var(--on-surface-variant)" }}
+              >
+                💡 Tidak memilih tanggal berakhir artinya sewa tanpa batas
+                waktu.
               </p>
             )}
 
@@ -276,11 +331,17 @@ export function SetOccupancyDialog({
             )}
           </div>
 
-          <DialogFooter className="p-6 border-t shrink-0 gap-2" style={{ borderColor: "var(--outline-variant)" }}>
+          <DialogFooter
+            className="p-6 border-t shrink-0 gap-2"
+            style={{ borderColor: "var(--outline-variant)" }}
+          >
             <Button
               type="button"
               variant="outline"
-              onClick={() => { onOpenChange(false); handleReset(); }}
+              onClick={() => {
+                onOpenChange(false);
+                handleReset();
+              }}
               disabled={isPending}
               className="rounded-full"
             >
@@ -292,7 +353,11 @@ export function SetOccupancyDialog({
               className="rounded-full font-bold text-white px-6"
               style={{ background: "var(--gradient-cta)" }}
             >
-              {isPending ? "Menyimpan..." : (initialData?.tenantName ? "Simpan Perubahan" : "Tetapkan Penyewa")}
+              {isPending
+                ? "Menyimpan..."
+                : initialData?.tenantName
+                  ? "Simpan Perubahan"
+                  : "Tambahkan Penyewa"}
             </Button>
           </DialogFooter>
         </form>

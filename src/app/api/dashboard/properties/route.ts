@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { currentUser } from "@clerk/nextjs/server";
+import { currentUser } from "@/lib/serverAuth";
 import { db } from "@/lib/db";
 import { properties, rooms } from "@/lib/db/schema";
 import { eq, desc, sql } from "drizzle-orm";
@@ -16,7 +16,7 @@ export async function GET() {
         address: properties.address,
         city: properties.city,
         isActive: properties.isActive,
-        createdAt: properties.createdAt
+        createdAt: properties.createdAt,
       })
       .from(properties)
       .where(eq(properties.ownerId, user.id))
@@ -32,11 +32,23 @@ export async function GET() {
 
         const total = roomRows.length;
         const occupied = roomRows.filter((r) => r.status === "occupied").length;
-        const available = roomRows.filter((r) => r.status === "available").length;
-        const maintenance = roomRows.filter((r) => r.status === "maintenance").length;
-        const occupancyRate = total > 0 ? Math.round((occupied / total) * 100) : 0;
-        return { ...prop, total, occupied, available, maintenance, occupancyRate };
-      })
+        const available = roomRows.filter(
+          (r) => r.status === "available",
+        ).length;
+        const maintenance = roomRows.filter(
+          (r) => r.status === "maintenance",
+        ).length;
+        const occupancyRate =
+          total > 0 ? Math.round((occupied / total) * 100) : 0;
+        return {
+          ...prop,
+          total,
+          occupied,
+          available,
+          maintenance,
+          occupancyRate,
+        };
+      }),
     );
 
     return NextResponse.json(propertyData);

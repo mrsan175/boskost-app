@@ -10,7 +10,7 @@ import {
   ArrowShrinkIcon,
 } from "@hugeicons/core-free-icons";
 import { ThemeSwitcher } from "@/components/theme-switcher";
-import { UserButton } from "@clerk/nextjs";
+import Link from "next/link";
 import { NotificationDropdown } from "@/components/dashboard/NotificationDropdown";
 import { Button } from "@/components/ui/button";
 import { SidebarContent } from "@/components/dashboard/Sidebar";
@@ -104,7 +104,7 @@ export default function DashboardTopbar({
           </Button>
           <div className="flex flex-col">
             <p
-              className="text-xs font-bold leading-tight truncate max-w-[100px]"
+              className="text-xs font-bold leading-tight truncate max-w-25"
               style={{
                 color: "var(--primary)",
                 fontFamily: "var(--font-display)",
@@ -178,14 +178,19 @@ export default function DashboardTopbar({
                 {tierLabels[tier] || tier}
               </p>
             </div>
-            <UserButton
-              appearance={{
-                elements: {
-                  avatarBox:
-                    "h-8 w-8 ring-2 ring-orange-200 dark:ring-orange-900",
-                },
-              }}
-            />
+            <Link
+              href="/profile"
+              className="h-8 w-8 rounded-full flex items-center justify-center text-sm font-bold bg-muted"
+              title={fullName}
+            >
+              {fullName
+                ? fullName
+                    .split(" ")
+                    .map((s) => s[0])
+                    .join("")
+                    .slice(0, 2)
+                : "U"}
+            </Link>
           </div>
         </div>
       </header>

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { currentUser } from "@clerk/nextjs/server";
+import { currentUser } from "@/lib/serverAuth";
 import { db } from "@/lib/db";
 import { rooms, properties, tenants, roomTenants } from "@/lib/db/schema";
 import { eq, and, desc } from "drizzle-orm";
@@ -29,9 +29,14 @@ export async function GET(req: Request) {
       })
       .from(rooms)
       .innerJoin(properties, eq(rooms.propertyId, properties.id))
-      .leftJoin(roomTenants, and(eq(rooms.id, roomTenants.roomId), eq(roomTenants.isActive, true)))
+      .leftJoin(
+        roomTenants,
+        and(eq(rooms.id, roomTenants.roomId), eq(roomTenants.isActive, true)),
+      )
       .leftJoin(tenants, eq(roomTenants.tenantId, tenants.id))
-      .where(and(eq(properties.ownerId, user.id), eq(properties.isActive, true)))
+      .where(
+        and(eq(properties.ownerId, user.id), eq(properties.isActive, true)),
+      )
       .orderBy(rooms.roomNumber);
 
     return NextResponse.json(allRooms);

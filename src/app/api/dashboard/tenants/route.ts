@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { currentUser } from "@clerk/nextjs/server";
+import { currentUser } from "@/lib/serverAuth";
 import { db } from "@/lib/db";
 import { tenants, roomTenants, rooms, properties } from "@/lib/db/schema";
 import { eq, and, desc, sql } from "drizzle-orm";

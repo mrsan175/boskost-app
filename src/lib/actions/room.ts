@@ -1,9 +1,17 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { rooms, properties, activityLogs, tenants, roomTenants, users, payments } from "@/lib/db/schema";
-import { currentUser } from "@clerk/nextjs/server";
-import { eq, and, count } from "drizzle-orm";
+import {
+  rooms,
+  properties,
+  activityLogs,
+  tenants,
+  roomTenants,
+  users,
+  payments,
+} from "@/lib/db/schema";
+import { currentUser } from "@/lib/serverAuth";
+import { eq, and, count, or } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 // ─── Helper: verify room ownership ─────────────────────────────────────────────
@@ -27,7 +35,8 @@ export async function createRoom(formData: FormData) {
   const propertyId = formData.get("propertyId") as string;
   const roomNumber = (formData.get("roomNumber") as string).trim();
   const floor = parseInt(formData.get("floor") as string) || 1;
-  const pricePerMonth = (formData.get("pricePerMonth") as string)?.trim() || null;
+  const pricePerMonth =
+    (formData.get("pricePerMonth") as string)?.trim() || null;
   const notes = (formData.get("notes") as string)?.trim() || null;
 
   if (!roomNumber) throw new Error("Nomor kamar wajib diisi");
@@ -48,7 +57,7 @@ export async function createRoom(formData: FormData) {
 
     if (totalRoomCount.value >= 5) {
       throw new Error(
-        "Batas Kamar Tercapai: Akun FREE hanya dapat memiliki maksimal 5 kamar (total). Silakan upgrade ke PRO untuk menambah lebih banyak."
+        "Batas Kamar Tercapai: Akun FREE hanya dapat memiliki maksimal 5 kamar (total). Silakan upgrade ke PRO untuk menambah lebih banyak.",
       );
     }
   }
@@ -79,7 +88,8 @@ export async function createRoomsBulk(formData: FormData) {
   const propertyId = formData.get("propertyId") as string;
   const roomNumbersRaw = (formData.get("roomNumbers") as string)?.trim();
   const floor = parseInt(formData.get("floor") as string) || 1;
-  const pricePerMonth = (formData.get("pricePerMonth") as string)?.trim() || null;
+  const pricePerMonth =
+    (formData.get("pricePerMonth") as string)?.trim() || null;
   const notes = (formData.get("notes") as string)?.trim() || null;
 
   if (!roomNumbersRaw) throw new Error("Nomor kamar wajib diisi");
@@ -102,9 +112,7 @@ export async function createRoomsBulk(formData: FormData) {
       .where(eq(properties.ownerId, user.id));
 
     if (totalRoomCount.value + roomNumbers.length > 5) {
-      throw new Error(
-        `Batas Kamar Tercapai: Akun FREE hanya dapat memiliki maksimal 5 kamar. Kamu mencoba menambahkan ${roomNumbers.length} kamar, tapi sisa kuotamu hanya ${5 - totalRoomCount.value}.`
-      );
+      throw new Error("Akun FREE hanya dapat memiliki maksimal 5 kamar.");
     }
   }
 
@@ -115,7 +123,7 @@ export async function createRoomsBulk(formData: FormData) {
   if (!prop) throw new Error("Properti tidak ditemukan");
 
   // Insert all rooms
-  const valuesToInsert = roomNumbers.map(nr => ({
+  const valuesToInsert = roomNumbers.map((nr) => ({
     id: crypto.randomUUID(),
     propertyId,
     roomNumber: nr,
@@ -148,7 +156,11 @@ export async function setRoomOccupied(formData: FormData) {
   if (!startDate) throw new Error("Tanggal masuk wajib diisi");
 
   const roomDetails = await db
-    .select({ propertyId: rooms.propertyId, roomNumber: rooms.roomNumber, pricePerMonth: rooms.pricePerMonth })
+    .select({
+      propertyId: rooms.propertyId,
+      roomNumber: rooms.roomNumber,
+      pricePerMonth: rooms.pricePerMonth,
+    })
     .from(rooms)
     .innerJoin(properties, eq(rooms.propertyId, properties.id))
     .where(and(eq(rooms.id, roomId), eq(properties.ownerId, user.id)));
@@ -163,15 +175,44 @@ export async function setRoomOccupied(formData: FormData) {
     .where(and(eq(roomTenants.roomId, roomId), eq(roomTenants.isActive, true)));
 
   // Create new tenant record
-  const tenantId = crypto.randomUUID();
-  await db.insert(tenants).values({
-    id: tenantId,
-    ownerId: user.id,
-    name: tenantName,
-    email: tenantEmail,
-    phone: tenantPhone,
-    isVerified: false,
-  });
+  // Try to find an existing tenant to avoid duplicates. Match by email first, then phone, then exact name.
+  let tenantId = null;
+  if (tenantEmail) {
+    const [existing] = await db
+      .select()
+      .from(tenants)
+      .where(and(eq(tenants.ownerId, user.id), eq(tenants.email, tenantEmail)));
+    if (existing) tenantId = existing.id;
+  }
+
+  if (!tenantId && tenantPhone) {
+    const [existing] = await db
+      .select()
+      .from(tenants)
+      .where(and(eq(tenants.ownerId, user.id), eq(tenants.phone, tenantPhone)));
+    if (existing) tenantId = existing.id;
+  }
+
+  // As a last resort, match by exact name (may be ambiguous) to reduce obvious duplicates
+  if (!tenantId && tenantName) {
+    const [existing] = await db
+      .select()
+      .from(tenants)
+      .where(and(eq(tenants.ownerId, user.id), eq(tenants.name, tenantName)));
+    if (existing) tenantId = existing.id;
+  }
+
+  if (!tenantId) {
+    tenantId = crypto.randomUUID();
+    await db.insert(tenants).values({
+      id: tenantId,
+      ownerId: user.id,
+      name: tenantName,
+      email: tenantEmail,
+      phone: tenantPhone,
+      isVerified: false,
+    });
+  }
 
   // Create room_tenant lease record
   const leaseId = crypto.randomUUID();
@@ -199,8 +240,10 @@ export async function setRoomOccupied(formData: FormData) {
     if (endDate) {
       const start = new Date(startDate);
       const end = new Date(endDate);
-      const diffDays = Math.ceil(Math.abs(end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
-      
+      const diffDays = Math.ceil(
+        Math.abs(end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24),
+      );
+
       if (diffDays >= 28) {
         const months = Math.round(diffDays / 30.44);
         amount = price * Math.max(1, months);
@@ -215,7 +258,7 @@ export async function setRoomOccupied(formData: FormData) {
       id: crypto.randomUUID(),
       roomTenantId: leaseId,
       amount: amount.toString(),
-      dueDate: startDate, 
+      dueDate: startDate,
       status: "pending",
       notes: billingNote,
     });
@@ -271,7 +314,7 @@ export async function vacateRoom(roomId: string) {
 
 export async function updateRoomStatus(
   roomId: string,
-  status: "available" | "maintenance"
+  status: "available" | "maintenance",
 ) {
   const user = await currentUser();
   if (!user) throw new Error("Unauthorized");
@@ -286,7 +329,9 @@ export async function updateRoomStatus(
     const [activeLease] = await db
       .select({ id: roomTenants.id })
       .from(roomTenants)
-      .where(and(eq(roomTenants.roomId, roomId), eq(roomTenants.isActive, true)));
+      .where(
+        and(eq(roomTenants.roomId, roomId), eq(roomTenants.isActive, true)),
+      );
 
     if (activeLease) {
       targetStatus = "occupied";
@@ -315,7 +360,8 @@ export async function updateRoomStatus(
       propertyId: row.propertyId,
       type: "room_vacated", // Using a general type or could create a new one
       title: `Kamar ${row.roomNumber} selesai perbaikan`,
-      description: "Perbaikan selesai, kamar kembali berstatus Terisi (ada penghuni)",
+      description:
+        "Perbaikan selesai, kamar kembali berstatus Terisi (ada penghuni)",
     });
   } else if (status === "available") {
     await db.insert(activityLogs).values({
@@ -340,7 +386,8 @@ export async function updateRoom(formData: FormData) {
   const roomId = formData.get("roomId") as string;
   const roomNumber = (formData.get("roomNumber") as string)?.trim();
   const floor = parseInt(formData.get("floor") as string) || 1;
-  const pricePerMonth = (formData.get("pricePerMonth") as string)?.trim() || null;
+  const pricePerMonth =
+    (formData.get("pricePerMonth") as string)?.trim() || null;
   const notes = (formData.get("notes") as string)?.trim() || null;
 
   if (!roomId) throw new Error("ID Kamar tidak ditemukan");
@@ -392,8 +439,12 @@ export async function moveTenant(formData: FormData) {
     .select({ status: rooms.status, isActive: rooms.isActive })
     .from(rooms)
     .where(eq(rooms.id, newRoomId));
-  
-  if (!newRoomStatus || newRoomStatus.status !== "available" || !newRoomStatus.isActive) {
+
+  if (
+    !newRoomStatus ||
+    newRoomStatus.status !== "available" ||
+    !newRoomStatus.isActive
+  ) {
     throw new Error("Kamar tujuan tidak tersedia atau dalam perbaikan");
   }
 
@@ -401,7 +452,9 @@ export async function moveTenant(formData: FormData) {
   const [activeLease] = await db
     .select({ id: roomTenants.id, tenantId: roomTenants.tenantId })
     .from(roomTenants)
-    .where(and(eq(roomTenants.roomId, oldRoomId), eq(roomTenants.isActive, true)));
+    .where(
+      and(eq(roomTenants.roomId, oldRoomId), eq(roomTenants.isActive, true)),
+    );
 
   if (!activeLease) throw new Error("Tidak ada penghuni aktif di kamar ini");
 

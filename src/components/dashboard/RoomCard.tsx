@@ -266,7 +266,7 @@ export function RoomCard({ room }: RoomCardProps) {
                 <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-orange-50 text-orange-600">
                   <HugeiconsIcon icon={User02Icon} size={14} />
                 </div>
-                <span className="text-xs font-bold">Tetapkan Penyewa</span>
+                <span className="text-xs font-bold">Tambahkan Penyewa</span>
               </DropdownMenuItem>
             )}
 
