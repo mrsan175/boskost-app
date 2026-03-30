@@ -10,8 +10,6 @@ export default async function PaymentsPage() {
   const user = await currentUser();
   if (!user) redirect("/");
 
-  const fullName = [user.firstName, user.lastName].filter(Boolean).join(" ");
-
   // Subscription check
   const [userData] = await db
     .select({ subscriptionTier: users.subscriptionTier })
